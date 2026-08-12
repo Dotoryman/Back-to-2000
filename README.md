@@ -1,100 +1,32 @@
-# vinext-starter
+# Back to 2000
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+1998년부터 2020년까지의 웹사이트, 온라인 서비스, 휴대전화와 디지털 제품을 탐험하는 디지털 타임머신입니다.
 
-## Prerequisites
+현재 기준 버전은 **0.1.0**입니다. 231개의 연도별 기록, 메인 타임라인, 카테고리 타임라인, 검색, 상세 스토리, 로컬 컬렉션, D1/R2 기반 관리자 입력의 기초 구조를 포함합니다.
 
-- Node.js `>=22.13.0`
+## 개발
 
-## Quick Start
+필수 환경은 Node.js 22.13 이상입니다.
 
 ```bash
 npm install
 npm run dev
-npm run build
+npm test
+npm run lint
 ```
 
-This starter does not use `wrangler.jsonc`.
+Cloudflare 로컬 바인딩은 `.openai/hosting.json`의 `DB`(D1), `MEDIA`(R2)를 사용합니다. 배포 관리자 접근은 `ADMIN_EMAILS` 환경값에 쉼표로 구분한 허용 이메일을 설정해야 합니다. 로컬호스트에서는 개발 편의를 위해 관리자 입력 화면을 사용할 수 있습니다.
 
-## Included Shape
+## 구조
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+- `app/`: 페이지, SEO, API
+- `components/`: 탐색기, 타임라인, 상세 화면, 관리자 UI
+- `domain/catalog/`: 정적 0.1 카탈로그와 이미지 매니페스트
+- `db/`: 확장 가능한 D1 스키마
+- `infrastructure/`: R2와 관리자 권한 경계
+- `scripts/`: 이미지 수집·검증 도구
+- `docs/ROADMAP.md`: 1.0 정식 배포 계획
 
-## Workspace Auth Headers
+## 현재 경계
 
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+0.1의 공개 아카이브는 검수된 정적 카탈로그를 사용하고, 관리자 입력은 D1/R2에 저장되는 별도 편집 경로입니다. 두 데이터 경로의 통합과 게시 승인 워크플로는 0.2의 최우선 과제입니다.

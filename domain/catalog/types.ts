@@ -1,4 +1,4 @@
-export type ContentKind = "website" | "phone" | "service" | "event" | "game" | "program";
+export type ContentKind = "website" | "phone" | "product" | "service" | "event" | "game" | "program";
 
 export type Era = {
   year: number;
@@ -15,6 +15,7 @@ export type CatalogItem = {
   brand: string;
   year: number;
   endYear?: number;
+  activeYears?: number[];
   eyebrow: string;
   summary: string;
   description: string;
@@ -23,5 +24,15 @@ export type CatalogItem = {
   featured?: boolean;
   specs?: Record<string, string>;
   highlights: string[];
+  source?: {
+    label: string;
+    url: string;
+  };
+  image?: {
+    src: string;
+    alt: string;
+    credit: string;
+    sourceUrl: string;
+    license?: string;
+  };
 };
-
