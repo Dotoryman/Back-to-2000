@@ -1,6 +1,6 @@
 {
   "name": "back-to-2000",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -11,7 +11,11 @@
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:seed:v0.2": "tsx scripts/append-v02-catalog-seed.ts",
+    "quality:catalog": "tsx scripts/audit-catalog-quality.ts",
+    "cloudflare:migrate": "wrangler d1 migrations apply backto2000-production --remote --config wrangler.production.jsonc",
+    "cloudflare:deploy": "npm run build && wrangler deploy --config wrangler.production.jsonc"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
@@ -38,6 +42,7 @@
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.4.0",
+    "miniflare": "^4.20260515.0",
     "react-server-dom-webpack": "19.2.6",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",

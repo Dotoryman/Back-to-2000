@@ -4,16 +4,16 @@ import { ChevronLeft, ChevronRight, Globe2, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { catalog, isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
+import { isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
 import type { CatalogItem } from "@/domain/catalog/types";
 export type TimelineKind = "website" | "phone";
-export function CategoryTimeline({ kind }: { kind: TimelineKind }) {
+export function CategoryTimeline({ kind, catalog }: { kind: TimelineKind; catalog: CatalogItem[] }) {
   const [year, setYear] = useState<number>(kind === "website" ? 2000 : 2004);
   const index = timelineYears.indexOf(year as (typeof timelineYears)[number]);
   const items = useMemo(() => catalog
     .filter((item) => kind === "website" ? item.kind === "website" || item.kind === "service" : item.kind === "phone")
     .filter((item) => isItemVisibleInYear(item, year))
-    .sort((a, b) => a.kind.localeCompare(b.kind) || Math.abs(a.year - year) - Math.abs(b.year - year)), [kind, year]);
+    .sort((a, b) => a.kind.localeCompare(b.kind) || Math.abs(a.year - year) - Math.abs(b.year - year)), [catalog, kind, year]);
   const selectIndex = (next: number) => setYear(timelineYears[Math.max(0, Math.min(timelineYears.length - 1, next))]);
   return <section className={`category-timeline category-${kind}`}>
     <aside className="category-year-rail"><span>{kind === "website" ? "WEB" : "MOBILE"} HISTORY</span><strong>{year}</strong><input type="range" min="0" max={timelineYears.length - 1} value={index} onChange={(event) => selectIndex(Number(event.target.value))} aria-label={`${kind === "website" ? "웹사이트" : "휴대전화"} 연도 선택`} /><div>{timelineYears.map((item) => <button key={item} className={item === year ? "active" : ""} onClick={() => setYear(item)}>{item}</button>)}</div></aside>

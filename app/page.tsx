@@ -2,10 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Globe2, Smartphone } from "lucide-react";
 import { TimeExplorer } from "@/components/home/time-explorer";
+import { listPublishedCatalog } from "@/domain/catalog/repository";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const catalog = await listPublishedCatalog();
   return <>
-    <TimeExplorer />
+    <TimeExplorer catalog={catalog} />
     <section className="category-showcase">
       <div className="showcase-intro">
         <p>COLLECTIONS</p>

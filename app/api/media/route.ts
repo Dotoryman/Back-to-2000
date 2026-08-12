@@ -14,6 +14,12 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) return Response.json({ error: "file is required" }, { status: 400 });
   if (!TYPES.has(file.type)) return Response.json({ error: "unsupported media type" }, { status: 415 });
   if (file.size > MAX_BYTES) return Response.json({ error: "file exceeds 10 MB" }, { status: 413 });
+  const altText = String(form.get("altText") ?? "").trim();
+  const credit = String(form.get("credit") ?? "").trim();
+  const sourceUrl = String(form.get("sourceUrl") ?? "").trim();
+  const license = String(form.get("license") ?? "").trim();
+  if (!altText) return Response.json({ error: "altText is required" }, { status: 400 });
+  if (sourceUrl && !URL.canParse(sourceUrl)) return Response.json({ error: "invalid sourceUrl" }, { status: 400 });
 
   const key = createMediaKey(file.name);
   let bucket: R2Bucket | undefined;
@@ -34,6 +40,12 @@ export async function POST(request: Request) {
       filename: file.name,
       mimeType: file.type,
       byteSize: file.size,
+      storageProvider: "r2",
+      altText,
+      credit: credit || null,
+      sourceUrl: sourceUrl || null,
+      license: license || null,
+      rightsStatus: license ? "review" : "unknown",
     });
 
     return Response.json({

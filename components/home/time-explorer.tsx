@@ -5,12 +5,12 @@ import { Box, ChevronLeft, ChevronRight, Globe2, Smartphone, X } from "lucide-re
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { catalog, isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
+import { isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
 import type { CatalogItem } from "@/domain/catalog/types";
 
 type GalleryItem = CatalogItem & { displayYear: number };
 
-export function TimeExplorer() {
+export function TimeExplorer({ catalog }: { catalog: CatalogItem[] }) {
   const [year, setYear] = useState<number>(2004);
   const [selected, setSelected] = useState<GalleryItem | null>(null);
   const yearIndex = timelineYears.indexOf(year as (typeof timelineYears)[number]);
@@ -20,7 +20,7 @@ export function TimeExplorer() {
       .filter((item) => isItemVisibleInYear(item, year))
       .sort((a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)) || kindOrder[a.kind] - kindOrder[b.kind] || Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.name.localeCompare(b.name))
       .map((item) => ({ ...item, displayYear: year }));
-  }, [year]);
+  }, [catalog, year]);
 
   const setIndex = (value: number) => setYear(timelineYears[Math.max(0, Math.min(timelineYears.length - 1, value))]);
 

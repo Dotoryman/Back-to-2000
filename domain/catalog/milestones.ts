@@ -110,7 +110,7 @@ export const milestoneCatalog: CatalogItem[] = Object.entries(milestoneSeeds).fl
     year,
     activeYears: [year],
     eyebrow: kindCopy[kind].eyebrow,
-    summary: `${brand}가 ${year}년에 선보인 ${milestoneRole(name, kind)}`,
+    summary: `${brand}가 ${year}년에 선보인 ${milestoneRole(name, kind)}로, 당시 디지털 경험의 변화를 보여줍니다.`,
     description: milestoneDescription(name, brand, kind, year),
     tags: [kindCopy[kind].tag, String(year), brand],
     accent: accents[kind],

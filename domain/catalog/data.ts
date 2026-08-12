@@ -262,7 +262,7 @@ export const getItem = (kind: "website" | "phone", slug: string) =>
 export const getEra = (year: number) => eras.find((era) => era.year === year);
 
 export const isItemVisibleInYear = (item: CatalogItem, year: number) =>
-  item.year === year;
+  item.activeYears?.includes(year) ?? item.year === year;
 
 export const itemsNearYear = (year: number) => catalog.filter((item) => isItemVisibleInYear(item, year));
 
