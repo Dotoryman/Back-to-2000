@@ -299,3 +299,65 @@ body{
   .category-timeline-content,.timeline-story,.timeline-story-card{min-width:0;max-width:100%}.timeline-story-card{grid-template-columns:minmax(0,1fr);gap:20px}.timeline-story-image{width:100%;min-height:280px;border-radius:20px}
   .detail-hero{border-radius:22px}.detail-hero-copy{padding:48px 25px}.detail-visual.has-photo img{padding:34px}
 }
+
+/* v0.2.1 lower-page rhythm: natural Korean wrapping, quieter editorial copy. */
+.showcase-intro{
+  grid-template-columns:minmax(180px,.58fr) minmax(0,1.42fr);
+  column-gap:72px;
+}
+.showcase-intro h2{
+  max-width:900px;
+  font-size:clamp(52px,6.5vw,92px);
+  line-height:.96;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.showcase-intro>span{
+  max-width:570px;
+  margin-top:30px;
+  font-size:16px;
+  line-height:1.72;
+  word-break:keep-all;
+}
+.showcase-copy h3{
+  font-size:clamp(48px,5.7vw,84px);
+  line-height:.98;
+  word-break:keep-all;
+}
+.showcase-copy>span{
+  max-width:390px;
+  font-size:15px;
+  line-height:1.75;
+  word-break:keep-all;
+}
+.archive-note{
+  grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);
+  gap:clamp(60px,9vw,150px);
+}
+.archive-note h2{
+  max-width:690px;
+  font-size:clamp(44px,4.5vw,66px);
+  line-height:1.08;
+  word-break:keep-all;
+  text-wrap:balance;
+}
+.archive-note>div:last-child p{
+  max-width:520px;
+  font-size:15px;
+  line-height:1.9;
+  word-break:keep-all;
+}
+@media(min-width:901px){
+  .showcase-copy h3{white-space:nowrap}
+}
+@media(max-width:900px){
+  .showcase-intro{display:block;padding:76px 22px}
+  .showcase-intro>p{margin-bottom:30px}
+  .showcase-intro h2{max-width:340px;font-size:clamp(45px,13vw,62px);line-height:1.02}
+  .showcase-intro>span{max-width:330px;margin-top:24px;font-size:14px;line-height:1.75}
+  .showcase-copy h3{font-size:clamp(43px,13vw,60px)}
+  .showcase-copy>span{max-width:320px;font-size:14px;line-height:1.72}
+  .archive-note{grid-template-columns:1fr;gap:48px}
+  .archive-note h2{max-width:340px;font-size:clamp(40px,11vw,54px);line-height:1.08}
+  .archive-note>div:last-child p{max-width:340px;font-size:14px;line-height:1.85}
+}

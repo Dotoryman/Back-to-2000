@@ -13,13 +13,13 @@ export default async function Home() {
     <section className="category-showcase">
       <div className="showcase-intro">
         <p>COLLECTIONS</p>
-        <h2>무엇을<br />다시 만나볼까요?</h2>
-        <span>종류를 고르면 시간의 흐름을 따라<br />대표적인 장면들이 이어집니다.</span>
+        <h2>무엇을 다시 만나볼까요?</h2>
+        <span>종류를 고르면 시간의 흐름을 따라 대표적인 장면들이 이어집니다.</span>
       </div>
       <Link href="/timelines/website" className="showcase-panel website-panel">
         <div className="showcase-copy">
           <Globe2 /><p>WEB &amp; SERVICE ARCHIVE</p><h3>웹 &amp; 서비스</h3>
-          <span>네이버, 구글, 다음부터<br />메신저와 동영상 서비스까지.</span>
+          <span>네이버, 구글, 다음부터 메신저와 동영상 서비스까지.</span>
           <b>타임라인 보기 <ArrowRight /></b>
         </div>
         <div className="showcase-browser-stack real-archive-stack" aria-hidden="true">
@@ -31,7 +31,7 @@ export default async function Home() {
       <Link href="/timelines/phone" className="showcase-panel phone-panel">
         <div className="showcase-copy">
           <Smartphone /><p>MOBILE ARCHIVE</p><h3>휴대전화</h3>
-          <span>Samsung, LG, Motorola, BlackBerry.<br />출시 연도로 이어지는 디바이스의 변화.</span>
+          <span>Samsung, LG, Motorola, BlackBerry. 출시 연도로 이어지는 디바이스의 변화.</span>
           <b>타임라인 보기 <ArrowRight /></b>
         </div>
         <div className="showcase-photo real-phone-photo">
@@ -41,7 +41,7 @@ export default async function Home() {
       </Link>
     </section>
     <section className="archive-note">
-      <div><p>ABOUT THE ARCHIVE</p><h2>기억은 이미지에서<br />가장 먼저 시작됩니다.</h2></div>
+      <div><p>ABOUT THE ARCHIVE</p><h2>기억은 이미지에서 가장 먼저 시작됩니다.</h2></div>
       <div><p>각 시대의 화면과 기기를 기록하고, 출처가 확인된 자료와 개인의 기억을 함께 보존합니다.</p><Link href="/collection">내 추억 모아보기 <ArrowRight /></Link></div>
     </section>
   </>;
