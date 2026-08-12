@@ -77,6 +77,7 @@ export async function listPublishedCatalog(options: CatalogOptions = {}): Promis
         highlights: Array.isArray(metadata.highlights)
           ? metadata.highlights.filter((value): value is string => typeof value === "string")
           : [],
+        story: isStory(metadata.story) ? metadata.story : undefined,
         source: source ? { label: source.label, url: source.url } : undefined,
         image: hero ? {
           src: hero.publicUrl ?? `/api/media?key=${encodeURIComponent(hero.objectKey)}`,
@@ -128,4 +129,10 @@ export async function listCatalogCategories() {
 function isStringRecord(value: unknown): value is Record<string, string> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value)
     && Object.values(value as Record<string, unknown>).every((entry) => typeof entry === "string");
+}
+
+function isStory(value: unknown): value is NonNullable<CatalogItem["story"]> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const story = value as Record<string, unknown>;
+  return typeof story.significance === "string" && typeof story.legacy === "string";
 }

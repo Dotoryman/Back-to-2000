@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Box, Globe2, MessageCircle, Monitor, Smartphone } from "lucide-react";
+import { ArrowLeft, ArrowRight, Box, Gamepad2, Globe2, MessageCircle, Monitor, Smartphone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CollectionToggle } from "./collection-toggle";
@@ -11,11 +11,18 @@ const kindLabels: Record<CatalogItem["kind"], string> = {
   program: "SOFTWARE", game: "GAME", event: "MOMENT",
 };
 
-const icons = { website: Globe2, service: MessageCircle, phone: Smartphone, product: Box, program: Monitor, game: Monitor, event: Globe2 };
+const icons = { website: Globe2, service: MessageCircle, phone: Smartphone, product: Box, program: Monitor, game: Gamepad2, event: Globe2 };
+
+const detailCopy = {
+  game: { heading: "하나의 게임이 문화를 바꾸는 방식", identity: "어떤 게임인가", significance: "왜 세계적으로 흥행했나", label: "GAME STUDIO" },
+  phone: { heading: "하나의 제품이 시대를 바꾸는 방식", identity: "어떤 제품인가", significance: "왜 중요했나", label: "MAKER" },
+  product: { heading: "하나의 제품이 시대를 바꾸는 방식", identity: "어떤 제품인가", significance: "왜 중요했나", label: "MAKER" },
+} as const;
 
 export function CatalogDetail({ item, next }: { item: CatalogItem; next?: CatalogItem }) {
   const story = buildCatalogStory(item, next);
   const Icon = icons[item.kind];
+  const copy = item.kind in detailCopy ? detailCopy[item.kind as keyof typeof detailCopy] : { heading: "하나의 기억이 시대를 바꾸는 방식", identity: "무엇이었나", significance: "왜 중요했나", label: "CREATOR" };
   return <article className="archive-detail page-width">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
       "@context": "https://schema.org",
@@ -42,16 +49,16 @@ export function CatalogDetail({ item, next }: { item: CatalogItem; next?: Catalo
     </section>
 
     <div className="detail-facts">
-      <span><small>MAKER</small><strong>{item.brand}</strong></span>
+      <span><small>{copy.label}</small><strong>{item.brand}</strong></span>
       <span><small>YEAR</small><strong>{item.year}</strong></span>
       {Object.entries(item.specs ?? {}).slice(0, 4).map(([key, value]) => <span key={key}><small>{key}</small><strong>{value}</strong></span>)}
     </div>
 
     <section className="detail-story">
-      <header><p>THE STORY</p><h2>하나의 제품이<br />시대를 바꾸는 방식</h2></header>
+      <header><p>THE STORY</p><h2>{copy.heading}</h2></header>
       <div className="story-chapters">
-        <StoryChapter number="01" title="어떤 제품인가" text={story.identity} />
-        <StoryChapter number="02" title="왜 중요했나" text={story.significance} />
+        <StoryChapter number="01" title={copy.identity} text={story.identity} />
+        <StoryChapter number="02" title={copy.significance} text={story.significance} />
         <StoryChapter number="03" title="어떻게 이어졌나" text={story.legacy} />
       </div>
     </section>

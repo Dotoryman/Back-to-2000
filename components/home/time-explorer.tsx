@@ -87,7 +87,7 @@ function MemoryViewer({ item, close }: { item: GalleryItem; close: () => void })
       <motion.article className="memory-viewer" initial={{ opacity: 0, scale: .94, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .96 }} transition={{ type: "spring", damping: 24, stiffness: 260 }} style={{ "--accent": item.accent } as React.CSSProperties}>
         <button className="viewer-close" onClick={close} aria-label="닫기"><X /></button>
         <div className="viewer-image"><MemoryVisual item={item} index={0} /></div>
-        <div className="viewer-copy"><p>{item.kind.toUpperCase()} · {item.kind === "phone" ? "출시" : "시작"} {item.year}</p><h3>{item.name}</h3><strong>{item.eyebrow}</strong><span>{item.description}</span><Link className="viewer-detail-link" href={`/archive/${item.id}`}>제품 이야기 자세히 보기</Link><div>{item.tags.map((tag) => <i key={tag}>{tag}</i>)}</div></div>
+        <div className="viewer-copy"><p>{item.kind.toUpperCase()} · {item.kind === "phone" ? "출시" : "시작"} {item.year}</p><h3>{item.name}</h3><strong>{item.eyebrow}</strong><span>{item.description}</span><Link className="viewer-detail-link" href={`/archive/${item.id}`}>{item.kind === "game" ? "게임" : item.kind === "phone" || item.kind === "product" ? "제품" : "콘텐츠"} 이야기 자세히 보기</Link><div>{item.tags.map((tag) => <i key={tag}>{tag}</i>)}</div></div>
       </motion.article>
     </motion.div>
   );

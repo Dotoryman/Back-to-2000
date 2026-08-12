@@ -34,6 +34,11 @@ export function ContentForm() {
         eyebrow: data.get("eyebrow"), startYear: Number(data.get("startYear")), summary: data.get("summary"),
         body: data.get("body") ?? "", accent: data.get("accent"), status: data.get("status"),
         tags: splitList(data.get("tags")), highlights: splitLines(data.get("highlights")),
+        specs: Object.fromEntries([
+          ["장르", String(data.get("gameGenre") ?? "").trim()],
+          ["플랫폼", String(data.get("gamePlatform") ?? "").trim()],
+          ["공개 단계", String(data.get("gameMilestone") ?? "").trim()],
+        ].filter((entry) => entry[1])),
         sourceLabel: data.get("sourceLabel"), sourceUrl: data.get("sourceUrl"), sourceType: data.get("sourceType"), mediaId,
       }),
     });
@@ -50,6 +55,7 @@ export function ContentForm() {
     <label>상세 설명<textarea name="body" required minLength={40} rows={6} /></label>
     <label>태그<input name="tags" placeholder="Nokia, 휴대전화, 1999" /><small>쉼표로 구분</small></label>
     <label>대표 특징<textarea name="highlights" rows={3} placeholder={"내장 안테나\n교체형 커버\nT9 문자 입력"} /><small>한 줄에 하나씩 입력</small></label>
+    <fieldset><legend>게임 정보 · 게임 유형일 때 입력</legend><div className="form-grid"><label>장르<input name="gameGenre" placeholder="MMORPG, MOBA, 전술 FPS" /></label><label>공개 단계<input name="gameMilestone" placeholder="오픈 베타, 얼리 액세스, 정식 출시" /></label></div><label>플랫폼<input name="gamePlatform" placeholder="Windows, PlayStation 4, Xbox One" /></label></fieldset>
     <div className="form-grid"><label>근거 이름<input name="sourceLabel" required /></label><label>근거 유형<select name="sourceType"><option value="official">공식</option><option value="archive">아카이브</option><option value="reference">참고 자료</option><option value="community">커뮤니티</option></select></label></div>
     <label>근거 URL<input name="sourceUrl" type="url" required /></label>
     <label>이미지<input name="media" type="file" accept="image/jpeg,image/png,image/webp,image/avif" /><small>R2 · 최대 10MB</small></label>

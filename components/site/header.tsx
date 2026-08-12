@@ -8,6 +8,7 @@ const nav = [
   ["연도", "/years/2004"],
   ["웹사이트", "/categories/website"],
   ["휴대폰", "/categories/phone"],
+  ["게임", "/timelines/game"],
   ["컬렉션", "/collection"],
 ];
 
