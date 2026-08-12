@@ -1,29 +1,76 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { Miniflare } from "miniflare";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
-async function render(pathname = "/") {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
+const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
+const serverRoot = path.join(repositoryRoot, "dist", "server");
+const serverModules = await collectServerModules(serverRoot);
+const miniflare = new Miniflare({
+  compatibilityDate: "2026-05-15",
+  compatibilityFlags: ["nodejs_compat"],
+  modulesRoot: repositoryRoot,
+  modules: serverModules,
+  d1Databases: ["DB"],
+  serviceBindings: {
+    ASSETS: async () => new Response("Not found", { status: 404 }),
+  },
+});
+const databasePromise = createDatabase();
 
-  return worker.fetch(
-    new Request(`http://localhost${pathname}`, {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
+async function collectServerModules(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const modules = [];
+  for (const entry of entries) {
+    const absolutePath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      modules.push(...(await collectServerModules(absolutePath)));
+    } else if (entry.name.endsWith(".js")) {
+      modules.push({
+        type: "ESModule",
+        path: path.relative(repositoryRoot, absolutePath).replaceAll("\\", "/"),
+      });
+    }
+  }
+  return modules.sort((left, right) => {
+    if (left.path === "dist/server/index.js") return -1;
+    if (right.path === "dist/server/index.js") return 1;
+    return left.path.localeCompare(right.path);
+  });
 }
+
+async function createDatabase() {
+  const database = await miniflare.getD1Database("DB");
+  const migrationUrl = new URL("../drizzle/", import.meta.url);
+  const files = (await readdir(migrationUrl)).filter((name) => /^\d+_.+\.sql$/.test(name)).sort();
+  for (const file of files) {
+    const sql = await readFile(new URL(file, migrationUrl), "utf8");
+    for (const [index, statement] of sql.split("--> statement-breakpoint").entries()) {
+      const executable = statement.replace(/^--.*$/gm, "").trim();
+      if (!executable) continue;
+      try {
+        await database.prepare(executable).run();
+      } catch (error) {
+        throw new Error(`Migration ${file} statement ${index + 1} failed: ${executable.slice(0, 180)}`, {
+          cause: error,
+        });
+      }
+    }
+  }
+  return database;
+}
+
+async function render(pathname = "/") {
+  await databasePromise;
+  return miniflare.dispatchFetch(`http://localhost${pathname}`, { headers: { accept: "text/html" } });
+}
+
+test.after(async () => miniflare.dispose());
 
 test("server-renders the Back to 2000 experience", async () => {
   const response = await render();
@@ -65,4 +112,13 @@ test("renders editorial product stories without source labels", async () => {
   assert.match(html, /개인용 컴퓨터/);
   assert.doesNotMatch(html, /그해 새롭게 등장한 기술과 서비스의 흐름을 보여주는 기록으로 선정했습니다/);
   assert.doesNotMatch(html, /연도 근거|이미지 출처|이미지 ·/);
+});
+
+test("serves the public archive from the seeded D1 catalog", async () => {
+  const response = await render("/years/2020");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /iPhone 12/);
+  assert.match(html, /MacBook Air M1/);
+  assert.match(html, /Galaxy Z Flip/);
 });
