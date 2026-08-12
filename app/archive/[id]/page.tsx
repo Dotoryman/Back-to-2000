@@ -1,0 +1,19 @@
+import { notFound } from "next/navigation";
+import { CatalogDetail } from "@/components/catalog/catalog-detail";
+import { catalog } from "@/domain/catalog/data";
+import { findNextEvolution } from "@/domain/catalog/story";
+import type { Metadata } from "next";
+import { catalogItemMetadata } from "@/domain/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const item = catalog.find((candidate) => candidate.id === id);
+  return item ? catalogItemMetadata(item) : { title: "기억을 찾을 수 없습니다" };
+}
+
+export default async function ArchiveDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const item = catalog.find((candidate) => candidate.id === id);
+  if (!item) notFound();
+  return <CatalogDetail item={item} next={findNextEvolution(item, catalog)} />;
+}

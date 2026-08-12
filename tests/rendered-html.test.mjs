@@ -1,19 +1,16 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
-const templateRoot = new URL("../", import.meta.url);
-const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
-
-async function render() {
+async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${pathname}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -37,8 +34,11 @@ test("server-renders the Back to 2000 experience", async () => {
   assert.doesNotMatch(html, developmentPreviewMeta);
   assert.match(html, /Back to/);
   assert.match(html, /2000/);
-  assert.match(html, /시간여행/);
-  assert.match(html, /연도를 드래그해 탐험하기/);
+  assert.match(html, /타임머신/);
+  assert.match(html, /Back to 2000/);
+  assert.match(html, /홈페이지/);
+  assert.match(html, /휴대전화/);
+  assert.match(html, /2020/);
 });
 
 test("removes starter preview markers", async () => {
@@ -52,4 +52,17 @@ test("removes starter preview markers", async () => {
   assert.doesNotMatch(layout, /Starter Project|codex-preview/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   assert.match(css, /--cream:/);
+});
+
+test("renders editorial product stories without source labels", async () => {
+  const response = await render("/archive/milestone-2020-macbook-air-m1");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /어떤 제품인가/);
+  assert.match(html, /왜 중요했나/);
+  assert.match(html, /어떻게 이어졌나/);
+  assert.match(html, /MacBook Air M1/);
+  assert.match(html, /개인용 컴퓨터/);
+  assert.doesNotMatch(html, /그해 새롭게 등장한 기술과 서비스의 흐름을 보여주는 기록으로 선정했습니다/);
+  assert.doesNotMatch(html, /연도 근거|이미지 출처|이미지 ·/);
 });
