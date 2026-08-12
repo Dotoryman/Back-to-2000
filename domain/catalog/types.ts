@@ -24,6 +24,10 @@ export type CatalogItem = {
   featured?: boolean;
   specs?: Record<string, string>;
   highlights: string[];
+  story?: {
+    significance: string;
+    legacy: string;
+  };
   source?: {
     label: string;
     url: string;

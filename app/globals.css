@@ -300,6 +300,36 @@ body{
   .detail-hero{border-radius:22px}.detail-hero-copy{padding:48px 25px}.detail-visual.has-photo img{padding:34px}
 }
 
+/* v0.3 · global game archive */
+.game-panel{background:linear-gradient(145deg,#183b59 0%,#102b43 58%,#0b2237 100%);color:var(--white)}
+.game-panel .showcase-copy>svg,.game-panel .showcase-copy>b{color:#bfe4f5}
+.game-panel .showcase-copy>p,.game-panel .showcase-copy>span{color:#e8ddcf}
+.showcase-game-stack{position:relative;min-height:720px;overflow:hidden}
+.showcase-game-stack:before{content:"PLAY / 1998—2020";position:absolute;right:42px;top:38px;color:rgba(255,255,255,.5);font-size:9px;font-weight:750;letter-spacing:.22em}
+.showcase-game-stack>div{position:absolute;overflow:hidden;border:1px solid rgba(255,255,255,.35);border-radius:22px;background:#f7f2e9;box-shadow:0 34px 80px rgba(3,15,26,.36)}
+.showcase-game-stack>div img{object-fit:contain;padding:18px}
+.showcase-game-stack>div:nth-child(1){z-index:2;left:2%;top:12%;width:66%;height:46%;transform:rotate(-3deg)}
+.showcase-game-stack>div:nth-child(2){z-index:3;right:-3%;top:32%;width:62%;height:47%;transform:rotate(3deg)}
+.showcase-game-stack>div:nth-child(3){z-index:4;left:8%;bottom:4%;width:50%;height:30%;transform:rotate(-1deg)}
+.category-game .category-year-rail>strong,.category-game .category-timeline-heading svg{color:#b35c45}
+.category-game .category-year-rail>input{accent-color:#b35c45}
+.category-game .timeline-story-image{background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 18%,#fbf7ef),#dfd1bd)}
+.category-timeline .timeline-story-card{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.timeline-story-card>div:last-child{min-width:0}
+.timeline-story-card>div:last-child>span{display:block;max-width:590px;word-break:keep-all}
+.timeline-detail-link{display:inline-flex}
+.admin-form fieldset{margin:0;padding:22px;border:1px solid var(--line);border-radius:18px}
+.admin-form legend{padding:0 8px;color:var(--navy);font-size:12px;font-weight:750}
+
+@media(max-width:900px){
+  .showcase-game-stack{min-height:auto}
+  .showcase-game-stack:before{right:18px;top:18px}
+  .showcase-game-stack>div:nth-child(1){left:4%;top:10%;width:70%;height:44%}
+  .showcase-game-stack>div:nth-child(2){right:-5%;top:34%;width:68%;height:45%}
+  .showcase-game-stack>div:nth-child(3){left:8%;bottom:2%;width:56%;height:28%}
+  .category-timeline .timeline-story-card{grid-template-columns:minmax(0,1fr)}
+}
+
 /* v0.2.1 lower-page rhythm: natural Korean wrapping, quieter editorial copy. */
 .showcase-intro{
   grid-template-columns:minmax(180px,.58fr) minmax(0,1.42fr);

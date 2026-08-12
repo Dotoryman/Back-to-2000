@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Globe2, Smartphone } from "lucide-react";
+import { ArrowRight, Gamepad2, Globe2, Smartphone } from "lucide-react";
 import { TimeExplorer } from "@/components/home/time-explorer";
 import { listPublishedCatalog } from "@/domain/catalog/repository";
 
@@ -37,6 +37,18 @@ export default async function Home() {
         <div className="showcase-photo real-phone-photo">
           <Image src="/images/archive/motorola-razr-v3.png" fill sizes="(max-width: 900px) 100vw, 55vw" alt="Motorola RAZR V3 닫힌 모습과 열린 모습" />
           <small>Raimond Spekking · CC BY-SA 4.0</small>
+        </div>
+      </Link>
+      <Link href="/timelines/game" className="showcase-panel game-panel">
+        <div className="showcase-copy">
+          <Gamepad2 /><p>GLOBAL GAME ARCHIVE</p><h3>게임</h3>
+          <span>공개 테스트와 출시를 거쳐 전 세계의 놀이 문화가 된 게임들.</span>
+          <b>타임라인 보기 <ArrowRight /></b>
+        </div>
+        <div className="showcase-game-stack" aria-hidden="true">
+          <div><Image src="/images/archive/milestones/1998-starcraft-user.jpg" fill sizes="45vw" alt="StarCraft 대표 화면" /></div>
+          <div><Image src="/images/archive/milestones/2004-world-of-warcraft.png" fill sizes="45vw" alt="World of Warcraft 대표 이미지" /></div>
+          <div><Image src="/images/archive/milestones/2017-fortnite-mark.svg" fill sizes="45vw" alt="Fortnite 로고" /></div>
         </div>
       </Link>
     </section>

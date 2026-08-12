@@ -1,5 +1,6 @@
 import type { CatalogItem, ContentKind, Era } from "./types";
 import { milestoneCatalog } from "./milestones";
+import { gameCatalog } from "./games";
 
 export const timelineYears = Array.from({ length: 23 }, (_, index) => 1998 + index);
 
@@ -242,10 +243,11 @@ const coreCatalog: CatalogItem[] = [
   },
 ];
 
-const coreKeys = new Set(coreCatalog.map((item) => `${item.year}:${item.name.toLocaleLowerCase()}`));
+const curatedCatalog = [...coreCatalog, ...gameCatalog];
+const coreKeys = new Set(curatedCatalog.map((item) => `${item.year}:${item.name.toLocaleLowerCase()}`));
 export const catalog: CatalogItem[] = [
-  ...coreCatalog,
-  ...milestoneCatalog.filter((item) => !coreKeys.has(`${item.year}:${item.name.toLocaleLowerCase()}`)),
+  ...curatedCatalog,
+  ...milestoneCatalog.filter((item) => item.kind !== "game" && !coreKeys.has(`${item.year}:${item.name.toLocaleLowerCase()}`)),
 ];
 
 export const categories: Array<{ slug: ContentKind | "popular"; name: string; description: string }> = [
@@ -253,6 +255,7 @@ export const categories: Array<{ slug: ContentKind | "popular"; name: string; de
   { slug: "phone", name: "휴대폰", description: "손안의 물건으로 취향을 말하던 피처폰과 스마트폰" },
   { slug: "product", name: "제품", description: "PC·콘솔·웨어러블까지 디지털 생활을 바꾼 기념비적인 제품" },
   { slug: "service", name: "서비스", description: "메신저·동영상·소셜로 사람을 연결한 온라인 서비스" },
+  { slug: "game", name: "게임", description: "공개 테스트와 출시를 거쳐 세계적인 놀이 문화가 된 게임" },
   { slug: "popular", name: "인기 콘텐츠", description: "많은 시간여행자가 다시 찾는 기억" },
 ];
 

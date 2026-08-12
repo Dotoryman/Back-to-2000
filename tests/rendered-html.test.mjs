@@ -85,7 +85,28 @@ test("server-renders the Back to 2000 experience", async () => {
   assert.match(html, /Back to 2000/);
   assert.match(html, /홈페이지/);
   assert.match(html, /휴대전화/);
+  assert.match(html, /GLOBAL GAME ARCHIVE/);
   assert.match(html, /2020/);
+});
+
+test("renders a game for every year and exposes the global game timeline", async () => {
+  const database = await databasePromise;
+  const gameStats = await database.prepare("SELECT COUNT(*) AS total, COUNT(DISTINCT start_year) AS years FROM content_items WHERE type = 'game' AND status = 'published'").first();
+  assert.equal(Number(gameStats.total), 23);
+  assert.equal(Number(gameStats.years), 23);
+
+  const timeline = await render("/timelines/game");
+  assert.equal(timeline.status, 200);
+  const timelineHtml = await timeline.text();
+  assert.match(timelineHtml, /글로벌 게임/);
+  assert.match(timelineHtml, /StarCraft/);
+
+  const detail = await render("/archive/game-2020-valorant");
+  assert.equal(detail.status, 200);
+  const detailHtml = await detail.text();
+  assert.match(detailHtml, /어떤 게임인가/);
+  assert.match(detailHtml, /왜 세계적으로 흥행했나/);
+  assert.match(detailHtml, /클로즈드 베타·글로벌 출시/);
 });
 
 test("removes starter preview markers", async () => {
