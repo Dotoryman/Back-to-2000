@@ -27,7 +27,13 @@ export function TimeExplorer({ catalog }: { catalog: CatalogItem[] }) {
   return (
     <section className="time-explorer" id="explore">
       <div className="explorer-masthead">
-        <h1>Back to 2000</h1>
+        <div>
+          <p>CURATED DIGITAL CULTURE · 1998—2020</p>
+          <h1>Back to 2000</h1>
+        </div>
+        <div className="explorer-index" aria-label={`아카이브 콘텐츠 ${catalog.length}개`}>
+          <span>ARCHIVE INDEX</span><strong>{catalog.length}</strong><small>OBJECTS</small>
+        </div>
       </div>
       <aside className="vertical-timeline" aria-label="연도 선택">
         <div className="timeline-caption"><span>TIME</span><strong>{year}</strong></div>
@@ -45,8 +51,8 @@ export function TimeExplorer({ catalog }: { catalog: CatalogItem[] }) {
       </aside>
 
       <div className="year-gallery">
-        <div className="gallery-heading">
-        <div><p>{year} ARCHIVE · NEW {items.length}</p></div>
+        <div className="gallery-heading" aria-live="polite">
+          <div><p>SELECTED YEAR</p><strong>{year}</strong><span>{items.length} objects</span></div>
           <p>이미지를 선택하면<br />크게 볼 수 있어요.</p>
         </div>
         <AnimatePresence mode="wait">

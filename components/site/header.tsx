@@ -16,7 +16,7 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="nav-shell">
-        <Link href="/" className="wordmark" aria-label="Back to 2000 홈">Back to 2000</Link>
+        <Link href="/" className="wordmark" aria-label="Back to 2000 홈">Back to <span>2000</span></Link>
         <nav className={open ? "nav-links is-open" : "nav-links"} aria-label="주요 메뉴">
           {nav.map(([label, href]) => <Link key={href} href={href} onClick={() => setOpen(false)}>{label}</Link>)}
           <Link href="/admin" className="admin-link" onClick={() => setOpen(false)}>관리</Link>
