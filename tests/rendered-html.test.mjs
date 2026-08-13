@@ -87,6 +87,8 @@ test("server-renders the Back to 2000 experience", async () => {
   assert.match(html, /휴대전화/);
   assert.match(html, /GLOBAL GAME ARCHIVE/);
   assert.match(html, /2020/);
+  assert.match(html, /mobile-year-stepper/);
+  assert.match(html, /연도 빠른 선택/);
 });
 
 test("renders a game for every year and exposes the global game timeline", async () => {
@@ -100,6 +102,7 @@ test("renders a game for every year and exposes the global game timeline", async
   const timelineHtml = await timeline.text();
   assert.match(timelineHtml, /글로벌 게임/);
   assert.match(timelineHtml, /StarCraft/);
+  assert.match(timelineHtml, /category-mobile-stepper/);
 
   const detail = await render("/archive/game-2020-valorant");
   assert.equal(detail.status, 200);
