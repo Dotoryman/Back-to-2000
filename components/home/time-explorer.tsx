@@ -11,7 +11,7 @@ import type { CatalogItem } from "@/domain/catalog/types";
 type GalleryItem = CatalogItem & { displayYear: number };
 
 export function TimeExplorer({ catalog }: { catalog: CatalogItem[] }) {
-  const [year, setYear] = useState<number>(2004);
+  const [year, setYear] = useState<number>(1998);
   const [selected, setSelected] = useState<GalleryItem | null>(null);
   const yearIndex = timelineYears.indexOf(year as (typeof timelineYears)[number]);
   const items = useMemo(() => {
