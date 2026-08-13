@@ -1,6 +1,6 @@
 {
   "name": "back-to-2000",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,6 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "db:seed:v0.2": "tsx scripts/append-v02-catalog-seed.ts",
     "db:seed:v0.3": "tsx scripts/generate-v03-game-migration.ts",
+    "db:seed:v0.3.2": "tsx scripts/generate-v032-migration.ts",
     "images:games": "node scripts/fetch-game-images.mjs",
     "quality:catalog": "tsx scripts/audit-catalog-quality.ts",
     "cloudflare:migrate": "wrangler d1 migrations apply backto2000-production --remote --config wrangler.production.jsonc",

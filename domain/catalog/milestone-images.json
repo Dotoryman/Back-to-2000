@@ -56,12 +56,12 @@
     "matchedTitle": "Nokia 5110"
   },
   "1998:paypal": {
-    "src": "/images/archive/milestones/1998-paypal.jpg",
-    "alt": "1998년 PayPal 대표 이미지",
-    "credit": "PayPal contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/PayPal",
-    "license": "Wikimedia source",
-    "matchedTitle": "PayPal"
+    "src": "/images/archive/milestones/1998-paypal-mark.svg",
+    "alt": "PayPal 결제 서비스 대표 마크",
+    "credit": "PayPal / Simple Icons contributors",
+    "sourceUrl": "https://simpleicons.org/?q=paypal",
+    "license": "CC0 1.0 · trademark",
+    "matchedTitle": "PayPal brand mark"
   },
   "1998:starcraft": {
     "src": "/images/archive/milestones/1998-starcraft-user.jpg",
@@ -160,12 +160,12 @@
     "matchedTitle": "Dreamcast"
   },
   "2000:baidu": {
-    "src": "/images/archive/milestones/2000-baidu.jpg",
-    "alt": "2000년 Baidu 대표 이미지",
-    "credit": "Baidu contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Baidu",
-    "license": "Wikimedia source",
-    "matchedTitle": "Baidu"
+    "src": "/images/archive/milestones/2000-baidu-mark.svg",
+    "alt": "Baidu 검색 서비스 대표 마크",
+    "credit": "Baidu / Simple Icons contributors",
+    "sourceUrl": "https://simpleicons.org/?q=baidu",
+    "license": "CC0 1.0 · trademark",
+    "matchedTitle": "Baidu brand mark"
   },
   "2000:deviantart": {
     "src": "/images/archive/milestones/2000-deviantart-mark.svg",
@@ -1264,12 +1264,12 @@
     "matchedTitle": "telegram brand mark"
   },
   "2013:vine": {
-    "src": "/images/archive/milestones/2013-vine.jpg",
-    "alt": "2013년 Vine 대표 이미지",
-    "credit": "Vine contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Vine",
-    "license": "Wikimedia source",
-    "matchedTitle": "Vine"
+    "src": "/images/archive/milestones/2013-vine-mark.svg",
+    "alt": "Vine 숏폼 동영상 서비스 대표 로고",
+    "credit": "Vine service mark",
+    "sourceUrl": "https://en.wikipedia.org/wiki/Vine_(service)",
+    "license": "상표 · 역사 기록용",
+    "matchedTitle": "Vine service mark"
   },
   "2013:xbox one": {
     "src": "/images/archive/milestones/2013-xbox-one.png",
