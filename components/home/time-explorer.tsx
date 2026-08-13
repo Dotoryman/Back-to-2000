@@ -36,15 +36,22 @@ export function TimeExplorer({ catalog }: { catalog: CatalogItem[] }) {
         </div>
       </div>
       <aside className="vertical-timeline" aria-label="연도 선택">
-        <div className="timeline-caption"><span>TIME</span><strong>{year}</strong></div>
+        <div className="timeline-caption">
+          <span>TIME</span><strong>{year}</strong>
+          <div className="mobile-year-stepper">
+            <button onClick={() => setIndex(yearIndex - 1)} disabled={yearIndex === 0} aria-label="이전 연도"><ChevronLeft /></button>
+            <em>{year}</em>
+            <button onClick={() => setIndex(yearIndex + 1)} disabled={yearIndex === timelineYears.length - 1} aria-label="다음 연도"><ChevronRight /></button>
+          </div>
+        </div>
         <div className="range-wrap">
           <input
             type="range" min="0" max={timelineYears.length - 1} step="1" value={yearIndex}
             onChange={(event) => setIndex(Number(event.target.value))}
             aria-label="연도 드래그"
           />
-          <div className="range-years" aria-hidden="true">
-            {timelineYears.map((item) => <button key={item} className={item === year ? "active" : ""} onClick={() => setYear(item)} tabIndex={-1}>{item}</button>)}
+          <div className="range-years" aria-label="연도 빠른 선택">
+            {timelineYears.map((item) => <button key={item} className={item === year ? "active" : ""} onClick={() => setYear(item)} aria-current={item === year ? "true" : undefined}>{item}</button>)}
           </div>
         </div>
         <p>막대를 위아래로<br />드래그해 보세요.</p>
