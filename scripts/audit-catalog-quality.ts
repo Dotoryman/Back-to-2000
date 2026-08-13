@@ -5,8 +5,10 @@ import { catalog, timelineYears } from "../domain/catalog/data";
 const issues: string[] = [];
 const duplicateIds = duplicates(catalog.map((item) => item.id));
 const duplicateSlugs = duplicates(catalog.map((item) => `${item.kind}:${item.slug}`));
+const duplicateNames = duplicates(catalog.map((item) => normalizeName(item.name)));
 if (duplicateIds.length) issues.push(`duplicate ids: ${duplicateIds.join(", ")}`);
 if (duplicateSlugs.length) issues.push(`duplicate kind/slug: ${duplicateSlugs.join(", ")}`);
+if (duplicateNames.length) issues.push(`duplicate normalized names: ${duplicateNames.join(", ")}`);
 
 for (const year of timelineYears) {
   const count = catalog.filter((item) => item.year === year).length;
@@ -16,6 +18,10 @@ for (const year of timelineYears) {
 }
 
 for (const item of catalog) {
+  const archiveYear = Math.max(timelineYears[0], item.year);
+  if (item.activeYears && (item.activeYears.length !== 1 || item.activeYears[0] !== archiveYear)) {
+    issues.push(`${item.id}: repeated or misplaced year links (${item.activeYears.join(",")})`);
+  }
   if (item.summary.length < 20) issues.push(`${item.id}: short summary`);
   if (item.description.length < 40) issues.push(`${item.id}: short description`);
   if (/그해 새롭게 등장한 기술과 서비스의 흐름/.test(item.description)) issues.push(`${item.id}: generic description`);
@@ -46,4 +52,8 @@ function duplicates(values: string[]) {
     else seen.add(value);
   }
   return [...duplicate];
+}
+
+function normalizeName(value: string) {
+  return value.toLocaleLowerCase("ko").replace(/[\s._-]+/g, "");
 }
