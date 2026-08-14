@@ -268,8 +268,8 @@ const coreCatalog: CatalogItem[] = [
     id: "phone-lg-wing", kind: "phone", slug: "lg-wing", name: "LG WING", brand: "LG", year: 2020,
     eyebrow: "회전하는 두 개의 화면", summary: "메인 화면을 돌려 T자 형태로 사용하는 LG의 실험적인 스마트폰", description: "2020년 출시된 LG WING은 영상을 보며 다른 작업을 하는 스위블 구조로 폼팩터의 가능성을 탐색했습니다.",
     tags: ["LG", "스위블", "듀얼스크린"], accent: "#c084fc", specs: { 제조사: "LG전자", 출시: "2020년", 형태: "스위블" }, highlights: ["90도 회전 화면", "짐벌 모션 카메라", "멀티태스킹"],
-    source: { label: "LG Mobile History", url: "https://www.lg.com/it/magazine/2021-04-lg-mobile-storia-tecnologie-prodotti/" },
-    image: { src: "/images/archive/devices/lg-wing.jpg", alt: "LG WING 제품 전체 모습과 회전 화면 사용 예", credit: "LG전자 / Wikimedia Commons", sourceUrl: "https://commons.wikimedia.org/wiki/Category:LG_Wing", license: "CC BY 2.0" },
+    source: { label: "LG 공식 뉴스룸", url: "https://www.lg.com/global/newsroom/news/corporate/lg-wing-represents-a-new-definition-of-usability-never-seen-before-in-a-smartphone/" },
+    image: { src: "/images/archive/devices/lg-wing-device.webp", alt: "스위블 화면을 펼친 LG WING과 전후면 제품 모습", credit: "LG전자 공식 뉴스룸", sourceUrl: "https://www.lg.com/global/newsroom/news/corporate/lg-wing-represents-a-new-definition-of-usability-never-seen-before-in-a-smartphone/", license: "LG전자 공식 보도 이미지 · 원저작자 권리 보유" },
   },
 ];
 
