@@ -112,7 +112,7 @@ export function AdminStudio() {
     <div id="operations" className="admin-operations">
       <div><small>WORKFLOW</small><strong>초안 → 검수 → 공개</strong><p>편집자는 작성과 검수 요청을, 관리자는 공개·검증·보관을 담당합니다.</p></div>
       <div><small>RECOVERY</small><strong>모든 변경을 버전으로 보존</strong><p>설명·출처·이미지 교체 기록을 D1 개정 이력과 검수 로그에 함께 남깁니다.</p></div>
-      <div><small>BACKUP</small><strong>배포 전 D1 내보내기</strong><p><code>npm run cloudflare:backup</code>으로 운영 데이터 사본을 만든 뒤 마이그레이션합니다.</p></div>
+      <div><small>BACKUP</small><strong>내보내기와 복원 검증</strong><p><code>cloudflare:backup</code> 후 <code>cloudflare:verify-backup</code>으로 격리 복원을 확인한 뒤 마이그레이션합니다.</p></div>
     </div>
   </section>;
 }
