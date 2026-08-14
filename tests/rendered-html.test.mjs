@@ -85,10 +85,30 @@ test("server-renders the Back to 2000 experience", async () => {
   assert.match(html, /Back to 2000/);
   assert.match(html, /홈페이지/);
   assert.match(html, /휴대전화/);
-  assert.match(html, /GLOBAL GAME ARCHIVE/);
+  assert.match(html, /GLOBAL GAME/);
+  assert.match(html, /category-shortcuts/);
+  assert.match(html, /보는 아카이브에서, 나의 기억을 모으는 아카이브로/);
   assert.match(html, /2020/);
   assert.match(html, /mobile-year-stepper/);
   assert.match(html, /연도 빠른 선택/);
+});
+
+test("persists an anonymous D1 memory collection with structured reactions", async () => {
+  await databasePromise;
+  const headers = { "content-type": "application/json", "x-b2000-device": "00000000-0000-4000-8000-000000000040" };
+  const saved = await miniflare.dispatchFetch("http://localhost/api/collection", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ contentId: "phone-nokia-3310", reaction: "remembered" }),
+  });
+  assert.equal(saved.status, 200);
+  const savedPayload = await saved.json();
+  assert.deepEqual(savedPayload.items, [{ contentId: "phone-nokia-3310", reaction: "remembered" }]);
+  assert.equal(savedPayload.counts["phone-nokia-3310"].remembered, 1);
+
+  const removed = await miniflare.dispatchFetch("http://localhost/api/collection?contentId=phone-nokia-3310", { method: "DELETE", headers });
+  assert.equal(removed.status, 200);
+  assert.deepEqual((await removed.json()).items, []);
 });
 
 test("renders a game for every year and exposes the global game timeline", async () => {
