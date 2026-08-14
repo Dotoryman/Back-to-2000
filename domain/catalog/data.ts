@@ -135,7 +135,7 @@ const coreCatalog: CatalogItem[] = [
     tags: ["큐리텔", "게임폰", "피처폰"], accent: "#b7a48d", specs: { 제조사: "팬택&큐리텔", 출시: "2004년 10월", 형태: "원형 폴더", 화면: "2.1인치 와이드 LCD" }, highlights: ["3D 그래픽 가속칩", "양손 게임 조작 버튼", "듀얼 스피커와 MP3"],
     story: { significance: "통화 중심 설계를 벗어나 특정 취미인 게임에 맞춰 외형과 버튼 배치를 바꾼 국내 피처폰 시대의 대담한 실험입니다.", legacy: "전용 게임폰은 주류가 되지 못했지만, 고성능 모바일 GPU와 게임 전용 액세서리·게이밍폰으로 이어지는 발상을 앞서 보여줬습니다." },
     source: { label: "전자신문 출시 보도", url: "https://www.etnews.com/200409300156" },
-    image: { src: "/images/archive/devices/curitel-ph-s3500.jpg", alt: "원형 외부 화면을 갖춘 은색 Curitel PH-S3500 제품 정면", credit: "Bunjang 판매자 제공 이미지", sourceUrl: "https://globalbunjang.com/product/333330999", license: "원저작자 권리 보유 · 출처 표기" },
+    image: { src: "/images/archive/devices/curitel-ph-s3500-device.webp", alt: "원형 외부 화면과 카메라가 보이는 은색 Curitel PH-S3500 실물 제품", credit: "Bunjang 판매자 제공 이미지", sourceUrl: "https://globalbunjang.com/product/352203507", license: "원저작자 권리 보유 · 출처 표기" },
   },
   {
     id: "phone-ever-ktf-x7000", kind: "phone", slug: "ever-ktf-x7000", name: "EVER KTF-X7000", brand: "KTFT EVER", year: 2005,
@@ -192,7 +192,7 @@ const coreCatalog: CatalogItem[] = [
     eyebrow: "만지는 즐거움", summary: "위젯과 진동 피드백으로 풀터치폰 시대를 알린 애니콜", description: "손끝에 반응하는 진동과 화면 위 위젯은 스마트폰 직전의 모바일 경험을 대표했습니다.",
     tags: ["풀터치", "애니콜", "햅틱"], accent: "#fbbf24", specs: { 제조사: "삼성전자", 출시: "2008년", 형태: "풀터치 바" }, highlights: ["햅틱 피드백", "위젯 UI", "지상파 DMB"],
     source: { label: "Samsung Newsroom Korea", url: "https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EC%95%A0%EB%8B%88%EC%BD%9C-%ED%96%85%ED%8B%B1%ED%8F%B0-%EB%A7%88%EC%BC%80%ED%8C%85-%EB%B3%B8%EA%B2%A9-%EA%B0%80%EB%8F%99" },
-    image: { src: "/images/archive/devices/samsung-anycall-haptic.jpg", alt: "Samsung Anycall Haptic을 손으로 조작하는 공식 광고 이미지", credit: "Samsung Electronics Newsroom", sourceUrl: "https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EC%95%A0%EB%8B%88%EC%BD%9C-%ED%96%85%ED%8B%B1%ED%8F%B0-%EB%A7%88%EC%BC%80%ED%8C%85-%EB%B3%B8%EA%B2%A9-%EA%B0%80%EB%8F%99", license: "© Samsung Electronics · 출처 표기" },
+    image: { src: "/images/archive/devices/samsung-anycall-haptic-device.webp", alt: "Samsung Anycall Haptic SCH-W420의 화면 구성을 보여주는 실물 제품 사진", credit: "The Register product archive", sourceUrl: "https://www.theregister.com/2008/03/26/samsung_anycall_w420/", license: "원저작자 권리 보유 · 출처 표기" },
   },
   {
     id: "phone-blackberry-bold", kind: "phone", slug: "blackberry-bold-9000", name: "BlackBerry Bold 9000", brand: "BlackBerry", year: 2008,
@@ -241,7 +241,7 @@ const coreCatalog: CatalogItem[] = [
     eyebrow: "취향대로 고르는 Moto", summary: "큰 화면과 전면 스피커, 사용자 맞춤 디자인을 강조한 Android폰", description: "2015년 발표된 Moto X Style은 비교적 순정에 가까운 Android와 전면 스피커, Moto Maker 개인화를 앞세웠습니다.",
     tags: ["Motorola", "Moto X", "Android"], accent: "#14b8a6", specs: { 제조사: "Motorola", 출시: "2015년", 화면: "5.7인치" }, highlights: ["Moto Maker", "전면 스테레오 스피커", "순정형 Android"],
     source: { label: "Moto X Style 발표", url: "https://time.com/3975370/motorola-moto-x-style-play/" },
-    image: { src: "/images/archive/devices/motorola-moto-x-style.jpg", alt: "Motorola Moto X Style 실물 사진", credit: "Kārlis Dambrāns / Wikimedia Commons", sourceUrl: "https://commons.wikimedia.org/wiki/File:Motorola_Moto_X_Style_(21598739494).jpg", license: "CC BY-SA 2.0" },
+    image: { src: "/images/archive/devices/motorola-moto-x-style-device.webp", alt: "곡면 후면과 카메라 모듈이 선명한 Motorola Moto X Style 실물 제품", credit: "Kārlis Dambrāns / Wikimedia Commons", sourceUrl: "https://commons.wikimedia.org/wiki/File:Motorola_Moto_X_Style_(22033955888).jpg", license: "CC BY 2.0" },
   },
   {
     id: "phone-galaxy-s9", kind: "phone", slug: "galaxy-s9", name: "Samsung Galaxy S9", brand: "Samsung", year: 2018,

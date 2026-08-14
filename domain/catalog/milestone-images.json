@@ -320,12 +320,12 @@
     "matchedTitle": "Xbox"
   },
   "2002:blackberry 5810": {
-    "src": "/images/archive/milestones/user-blackberry-reference.jpg",
-    "alt": "사용자가 제공한 BlackBerry 휴대기기 참고 이미지",
-    "credit": "사용자 제공 이미지",
-    "sourceUrl": "/images/archive/milestones/user-blackberry-reference.jpg",
-    "license": "사용자 제공",
-    "matchedTitle": "BlackBerry reference"
+    "src": "/images/archive/milestones/2002-blackberry-5810-device.webp",
+    "alt": "넓은 흑백 화면과 QWERTY 키보드를 갖춘 BlackBerry 5810 실물 제품",
+    "credit": "Mobile Phone Museum",
+    "sourceUrl": "https://www.mobilephonemuseum.com/phone-detail/blackbarry-5810",
+    "license": "원저작자 권리 보유 · 출처 표기",
+    "matchedTitle": "BlackBerry 5810"
   },
   "2002:friendster": {
     "src": "/images/archive/milestones/2002-friendster-commons.png",
@@ -400,12 +400,12 @@
     "matchedTitle": "Xbox Live logo.svg"
   },
   "2003:blackberry 6210": {
-    "src": "/images/archive/milestones/user-blackberry-reference.jpg",
-    "alt": "사용자가 제공한 BlackBerry 휴대기기 참고 이미지",
-    "credit": "사용자 제공 이미지",
-    "sourceUrl": "/images/archive/milestones/user-blackberry-reference.jpg",
-    "license": "사용자 제공",
-    "matchedTitle": "BlackBerry reference"
+    "src": "/images/archive/milestones/2003-blackberry-6210-device.webp",
+    "alt": "손에 든 파란색 BlackBerry 6210과 QWERTY 키보드가 보이는 실물 사진",
+    "credit": "BBRef device archive",
+    "sourceUrl": "https://bbref.ca/6210",
+    "license": "원저작자 권리 보유 · 출처 표기",
+    "matchedTitle": "BlackBerry 6210"
   },
   "2003:itunes store": {
     "src": "/images/archive/milestones/2003-itunes-store-mark.svg",
@@ -568,12 +568,12 @@
     "matchedTitle": "Bebo"
   },
   "2005:blackberry 8700": {
-    "src": "/images/archive/milestones/user-blackberry-reference.jpg",
-    "alt": "사용자가 제공한 BlackBerry 휴대기기 참고 이미지",
-    "credit": "사용자 제공 이미지",
-    "sourceUrl": "/images/archive/milestones/user-blackberry-reference.jpg",
-    "license": "사용자 제공",
-    "matchedTitle": "BlackBerry reference"
+    "src": "/images/archive/milestones/2005-blackberry-8700-device.webp",
+    "alt": "컬러 화면과 QWERTY 키보드를 갖춘 BlackBerry 8700 실물 제품",
+    "credit": "PhoneMore product archive",
+    "sourceUrl": "https://www.phonemore.com/pictures/blackberry/8700/",
+    "license": "원저작자 권리 보유 · 출처 표기",
+    "matchedTitle": "BlackBerry 8700"
   },
   "2005:etsy": {
     "src": "/images/archive/milestones/2005-etsy.png",
@@ -880,12 +880,12 @@
     "matchedTitle": "spotify brand mark"
   },
   "2009:bing": {
-    "src": "/images/archive/milestones/2009-bing-commons.png",
-    "alt": "Bing 대표 이미지",
-    "credit": "Original logo is made by Microsoft . SVG version is created and uploaded by GageSkidmore ( talk · contribs ) of English Wikipedia.",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bing_logo.svg",
-    "license": "Public domain",
-    "matchedTitle": "Bing logo.svg"
+    "src": "/images/archive/milestones/2009-bing-clean.png",
+    "alt": "투명 배경에 정돈된 Microsoft Bing 로고",
+    "credit": "Microsoft / Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Microsoft_Bing_logo.svg",
+    "license": "Public domain text logo · trademark",
+    "matchedTitle": "Microsoft Bing logo.svg"
   },
   "2009:foursquare": {
     "src": "/images/archive/milestones/2009-foursquare-mark.svg",
@@ -896,12 +896,12 @@
     "matchedTitle": "foursquare brand mark"
   },
   "2009:iphone 3gs": {
-    "src": "/images/archive/milestones/2009-iphone-3gs.jpg",
-    "alt": "2009년 iPhone 3GS 대표 이미지",
-    "credit": "IPhone 3GS contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/IPhone_3GS",
-    "license": "Wikimedia source",
-    "matchedTitle": "IPhone 3GS"
+    "src": "/images/archive/milestones/2009-iphone-3gs-device.webp",
+    "alt": "손에 든 검은색 Apple iPhone 3GS 실물 제품",
+    "credit": "William Hook / Wikimedia Commons",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:IPhone_3GS.jpg",
+    "license": "CC BY-SA 2.0",
+    "matchedTitle": "IPhone 3GS.jpg"
   },
   "2009:kickstarter": {
     "src": "/images/archive/milestones/2009-kickstarter-mark.svg",
@@ -1216,12 +1216,12 @@
     "matchedTitle": "google glass explorer edition"
   },
   "2013:lg g2": {
-    "src": "/images/archive/milestones/2013-lg-g2.jpg",
-    "alt": "2013년 LG G2 대표 이미지",
-    "credit": "LG G2 contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/LG_G2",
-    "license": "Wikimedia source",
-    "matchedTitle": "LG G2"
+    "src": "/images/archive/milestones/2013-lg-g2-device.webp",
+    "alt": "화면과 전면 베젤이 선명한 검은색 LG G2 실물 제품",
+    "credit": "Wikimedia Commons contributor",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:LG_G2_demo_phone.jpg",
+    "license": "Wikimedia Commons license",
+    "matchedTitle": "LG G2 demo phone.jpg"
   },
   "2013:motorola moto x": {
     "src": "/images/archive/milestones/2013-motorola-moto-x.jpg",
@@ -1240,12 +1240,12 @@
     "matchedTitle": "PlayStation 4"
   },
   "2013:samsung galaxy s4": {
-    "src": "/images/archive/milestones/2013-samsung-galaxy-s4.png",
-    "alt": "2013년 Samsung Galaxy S4 대표 이미지",
-    "credit": "Samsung Galaxy S4 contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Samsung_Galaxy_S4",
-    "license": "Wikimedia source",
-    "matchedTitle": "Samsung Galaxy S4"
+    "src": "/images/archive/milestones/2013-samsung-galaxy-s4-device.webp",
+    "alt": "화면을 켠 검은색 Samsung Galaxy S4 실물 제품",
+    "credit": "Wikimedia Commons contributor",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S4_(Black_Mist)_-_Front.jpg",
+    "license": "Wikimedia Commons license",
+    "matchedTitle": "Samsung Galaxy S4 (Black Mist) - Front.jpg"
   },
   "2013:slack": {
     "src": "/images/archive/milestones/2013-slack-commons.png",
@@ -1352,12 +1352,12 @@
     "matchedTitle": "PlayStation TV"
   },
   "2014:samsung galaxy s5": {
-    "src": "/images/archive/milestones/2014-samsung-galaxy-s5.png",
-    "alt": "2014년 Samsung Galaxy S5 대표 이미지",
-    "credit": "Samsung Galaxy S5 contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Samsung_Galaxy_S5",
-    "license": "Wikimedia source",
-    "matchedTitle": "Samsung Galaxy S5"
+    "src": "/images/archive/milestones/2014-samsung-galaxy-s5-device.webp",
+    "alt": "전면 전체가 보이는 흰색 Samsung Galaxy S5 제품",
+    "credit": "Wikimedia Commons contributor",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S5.png",
+    "license": "Wikimedia Commons license",
+    "matchedTitle": "Samsung Galaxy S5.png"
   },
   "2015:amazon echo (public release)": {
     "src": "/images/archive/milestones/2015-amazon-echo-first-generation.jpg",
@@ -1464,12 +1464,12 @@
     "matchedTitle": "googleassistant brand mark"
   },
   "2016:google pixel": {
-    "src": "/images/archive/milestones/2016-google-pixel.png",
-    "alt": "2016년 Google Pixel 대표 이미지",
-    "credit": "Google Pixel contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Google_Pixel",
-    "license": "Wikimedia source",
-    "matchedTitle": "Google Pixel"
+    "src": "/images/archive/milestones/2016-google-pixel-device.webp",
+    "alt": "화면을 켠 1세대 Google Pixel과 Pixel XL 실물 제품",
+    "credit": "Wikimedia Commons contributor",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Google_Pixel_and_Pixel_XL_smartphones_(30155272575).jpg",
+    "license": "Wikimedia Commons license",
+    "matchedTitle": "Google Pixel and Pixel XL smartphones"
   },
   "2016:htc vive": {
     "src": "/images/archive/milestones/2016-htc-vive.jpg",
