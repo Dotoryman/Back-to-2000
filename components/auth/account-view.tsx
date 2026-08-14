@@ -10,7 +10,7 @@ export function AccountView() {
   useEffect(() => {
     fetch("/api/auth/account", { cache: "no-store" }).then(async (response) => {
       if (response.status === 401) return window.location.replace("/auth");
-      setAccount(await response.json());
+      setAccount(await response.json() as Account);
     }).catch(() => setMessage("계정 정보를 불러오지 못했습니다."));
   }, []);
 
@@ -19,7 +19,7 @@ export function AccountView() {
     if (!account) return;
     const form = new FormData(event.currentTarget);
     const response = await fetch("/api/auth/account", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ displayName: form.get("displayName"), isPublic: form.get("isPublic") === "on" }) });
-    const data = await response.json();
+    const data = await response.json() as Account & { error?: string };
     if (!response.ok) return setMessage(data.error ?? "저장하지 못했습니다.");
     setAccount({ user: data.user, isPublic: data.isPublic });
     setMessage("프로필을 저장했습니다.");
@@ -35,7 +35,7 @@ export function AccountView() {
     if (!confirm("계정과 저장된 컬렉션을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.")) return;
     const form = new FormData(event.currentTarget);
     const response = await fetch("/api/auth/account", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: form.get("password") }) });
-    const data = await response.json();
+    const data = await response.json() as { error?: string };
     if (!response.ok) return setMessage(data.error ?? "계정을 삭제하지 못했습니다.");
     window.location.assign("/");
   }

@@ -9,8 +9,10 @@ const DEVICE_PATTERN = /^[A-Za-z0-9-]{20,80}$/;
 
 export type AuthUser = { id: string; username: string; displayName: string; role: "member" | "editor" | "admin" };
 
-function cookieValue(request: Request, name: string) {
-  const cookies = request.headers.get("cookie") ?? "";
+type HeaderReader = { get(name: string): string | null };
+
+function cookieValue(headers: HeaderReader, name: string) {
+  const cookies = headers.get("cookie") ?? "";
   for (const pair of cookies.split(";")) {
     const [key, ...value] = pair.trim().split("=");
     if (key === name) return decodeURIComponent(value.join("="));
@@ -37,7 +39,11 @@ export function isSameOriginMutation(request: Request) {
 }
 
 export async function getAuthSession(request: Request): Promise<{ user: AuthUser; tokenHash: string } | null> {
-  const token = cookieValue(request, SESSION_COOKIE);
+  return getAuthSessionFromHeaders(request.headers);
+}
+
+export async function getAuthSessionFromHeaders(headers: HeaderReader): Promise<{ user: AuthUser; tokenHash: string } | null> {
+  const token = cookieValue(headers, SESSION_COOKIE);
   if (!token) return null;
   const tokenHash = await hashSessionToken(token);
   const now = new Date();
@@ -62,7 +68,7 @@ export async function createSession(userId: string) {
 }
 
 export async function deleteSession(request: Request) {
-  const token = cookieValue(request, SESSION_COOKIE);
+  const token = cookieValue(request.headers, SESSION_COOKIE);
   if (token) await getDb().delete(userSessions).where(eq(userSessions.tokenHash, await hashSessionToken(token)));
 }
 

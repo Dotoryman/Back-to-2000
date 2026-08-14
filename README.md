@@ -2,7 +2,7 @@
 
 1998년부터 2020년까지의 웹사이트, 온라인 서비스, 휴대전화와 디지털 제품을 탐험하는 디지털 타임머신입니다.
 
-현재 기준 버전은 **0.4.1**입니다. D1 기반 익명 추억 컬렉션에 Back to 2000 전용 회원가입과 안전한 로그인 세션, 여러 기기 동기화를 더했습니다.
+현재 기준 버전은 **0.4.2**입니다. D1 기반 추억 컬렉션과 전용 회원 시스템 위에 아카이브 품질 감사, 편집 검수 워크플로, 인터랙티브 타임머신과 제품 계보를 더했습니다.
 
 ## 개발
 
@@ -14,9 +14,10 @@ npm run dev
 npm test
 npm run lint
 npm run quality:catalog
+npm run quality:images
 ```
 
-운영 환경은 `wrangler.production.jsonc`의 `DB`(D1)와 `MEDIA`(R2) 바인딩을 사용합니다. 마이그레이션은 `npm run cloudflare:migrate`, Worker 배포는 `npm run cloudflare:deploy`로 실행합니다. 배포 관리자 접근은 `ADMIN_EMAILS` 환경값에 쉼표로 구분한 허용 이메일을 설정해야 합니다. 로컬호스트에서는 개발 편의를 위해 관리자 입력 화면을 사용할 수 있습니다.
+운영 환경은 `wrangler.production.jsonc`의 `DB`(D1)와 `MEDIA`(R2) 바인딩을 사용합니다. `npm run cloudflare:backup`으로 D1 사본을 만든 뒤 `npm run cloudflare:migrate`, `npm run cloudflare:deploy` 순서로 배포합니다. 관리자 접근은 자체 회원의 `editor`·`admin` 역할로 분리되며, 비밀번호 pepper는 Worker secret `AUTH_PEPPER`로만 관리합니다.
 
 ## 구조
 
@@ -55,3 +56,10 @@ npm run quality:catalog
 - 외부 소셜 계정 없이 전용 아이디와 비밀번호로 가입하며, 비밀번호는 개별 salt를 사용한 PBKDF2-HMAC-SHA256과 D1 밖의 Worker secret HMAC pepper로만 저장합니다.
 - 로그인하면 현재 기기의 익명 컬렉션이 회원 컬렉션으로 자동 병합되고 여러 기기에서 동기화됩니다.
 - 계정 화면에서 표시 이름과 공개 준비 상태를 관리하고, 비밀번호 확인 후 계정과 컬렉션을 삭제할 수 있습니다.
+
+## v0.4.2 아카이브 운영과 타임머신
+
+- 관리 스튜디오에서 콘텐츠를 초안·검수·공개·보관 상태로 운영하고 모든 변경 이력을 D1에 남깁니다.
+- 이미지와 출처는 공개 설명에서 분리해 내부 권리 대장으로 관리하며, 전체 카탈로그 중복 검사를 배포 기준으로 사용합니다.
+- 홈 연표는 방향 애니메이션·키보드·선택형 사운드·전체화면을 지원합니다.
+- 상세 화면에서 같은 브랜드와 종류의 제품 계보 및 전후 이미지 비교를 제공합니다.

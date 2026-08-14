@@ -28,7 +28,7 @@ async function derivePassword(password: string, salt: Uint8Array, iterations: nu
 }
 
 async function applyPepper(hash: Uint8Array) {
-  const pepper = env.AUTH_PEPPER;
+  const pepper = (env as typeof env & { AUTH_PEPPER?: string }).AUTH_PEPPER;
   if (!pepper || pepper.length < 32) throw new Error("AUTH_PEPPER is unavailable");
   const key = await crypto.subtle.importKey("raw", encoder.encode(pepper), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return new Uint8Array(await crypto.subtle.sign("HMAC", key, asArrayBuffer(hash)));

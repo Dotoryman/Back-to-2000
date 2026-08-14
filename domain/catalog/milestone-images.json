@@ -408,12 +408,12 @@
     "matchedTitle": "BlackBerry 6210"
   },
   "2003:itunes store": {
-    "src": "/images/archive/milestones/2003-itunes-store-mark.svg",
+    "src": "/images/archive/milestones/2003-itunes-store-badge.svg",
     "alt": "iTunes Store 당시 서비스 마크",
-    "credit": "Simple Icons contributors",
-    "sourceUrl": "https://simpleicons.org/?q=iTunes%20Store",
-    "license": "CC0 1.0 · trademark",
-    "matchedTitle": "itunes brand mark"
+    "credit": "Back to 2000 archival rendering · Apple wordmark reference",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:ITunes_Store_logo.svg",
+    "license": "Original rendering · trademark reference",
+    "matchedTitle": "iTunes Store"
   },
   "2003:linkedin": {
     "src": "/images/archive/milestones/2003-linkedin-commons.png",
@@ -712,12 +712,12 @@
     "matchedTitle": "X (social network)"
   },
   "2006:windows live messenger": {
-    "src": "/images/archive/milestones/2006-windows-live-messenger.png",
+    "src": "/images/archive/milestones/2006-windows-live-messenger-mark.svg",
     "alt": "2006년 Windows Live Messenger 대표 이미지",
-    "credit": "MSN Messenger contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/MSN_Messenger",
-    "license": "Wikimedia source",
-    "matchedTitle": "MSN Messenger"
+    "credit": "Back to 2000 archival rendering · Phantom hax0r / Mysid reference",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:WLM_logo.svg",
+    "license": "Original rendering · public-domain reference",
+    "matchedTitle": "Windows Live Messenger"
   },
   "2007:android": {
     "src": "/images/archive/milestones/2007-android-mark.svg",
@@ -960,12 +960,12 @@
     "matchedTitle": "Windows 7"
   },
   "2010:facetime": {
-    "src": "/images/archive/milestones/2010-facetime-mark.svg",
+    "src": "/images/archive/milestones/2010-facetime-badge.svg",
     "alt": "FaceTime 당시 서비스 마크",
-    "credit": "Simple Icons contributors",
-    "sourceUrl": "https://simpleicons.org/?q=FaceTime",
-    "license": "CC0 1.0 · trademark",
-    "matchedTitle": "apple brand mark"
+    "credit": "Back to 2000 archival rendering · Apple icon reference",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:FaceTime_iOS.svg",
+    "license": "Original rendering · trademark reference",
+    "matchedTitle": "FaceTime"
   },
   "2010:flipboard": {
     "src": "/images/archive/milestones/2010-flipboard-mark.svg",
@@ -1048,12 +1048,12 @@
     "matchedTitle": "Chromebook Pixel (WiFi) open.JPG"
   },
   "2011:google+": {
-    "src": "/images/archive/milestones/2011-google-mark.svg",
+    "src": "/images/archive/milestones/2011-google-plus-mark.svg",
     "alt": "Google+ 당시 서비스 마크",
-    "credit": "Simple Icons contributors",
-    "sourceUrl": "https://simpleicons.org/?q=Google%2B",
-    "license": "CC0 1.0 · trademark",
-    "matchedTitle": "google brand mark"
+    "credit": "Back to 2000 archival rendering · Google logo reference",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Google%2B_logo.svg",
+    "license": "Original rendering · trademark reference",
+    "matchedTitle": "Google+"
   },
   "2011:iphone 4s": {
     "src": "/images/archive/milestones/2011-iphone-4s.png",
@@ -1360,10 +1360,10 @@
     "matchedTitle": "Samsung Galaxy S5.png"
   },
   "2015:amazon echo (public release)": {
-    "src": "/images/archive/milestones/2015-amazon-echo-first-generation.jpg",
+    "src": "/images/archive/milestones/2015-amazon-echo-public-release.webp",
     "alt": "정식 판매된 1세대 Amazon Echo",
-    "credit": "Woot product archive",
-    "sourceUrl": "https://electronics.woot.com/offers/amazon-echo-1st-generation-1",
+    "credit": "eBay product archive",
+    "sourceUrl": "https://www.ebay.co.uk/b/bn_7036960792",
     "license": "Source-site media terms",
     "matchedTitle": "amazon echo (public release)"
   },
@@ -1600,20 +1600,20 @@
     "matchedTitle": "Surface Laptop (1st generation)"
   },
   "2017:xbox one x": {
-    "src": "/images/archive/milestones/2017-xbox-one-x.png",
-    "alt": "2017년 Xbox One X 대표 이미지",
-    "credit": "Xbox One contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Xbox_One",
-    "license": "Wikimedia source",
-    "matchedTitle": "Xbox One"
+    "src": "/images/archive/milestones/2017-xbox-one-x.jpg",
+    "alt": "검은색 Xbox One X 본체 실물 제품 사진",
+    "credit": "PixelSquid product archive",
+    "sourceUrl": "https://www.pixelsquid.com/png/xbox-one-x-console-2420565726784918756",
+    "license": "Source-site media terms",
+    "matchedTitle": "Xbox One X"
   },
   "2018:apple watch series 4": {
     "src": "/images/archive/milestones/2018-apple-watch-series-4.jpg",
     "alt": "2018년 Apple Watch Series 4 대표 이미지",
-    "credit": "Apple Watch contributors",
-    "sourceUrl": "https://en.wikipedia.org/wiki/Apple_Watch",
-    "license": "Wikimedia source",
-    "matchedTitle": "Apple Watch"
+    "credit": "Walmart product archive",
+    "sourceUrl": "https://www.walmart.com/ip/149868647",
+    "license": "Source-site media terms",
+    "matchedTitle": "Apple Watch Series 4"
   },
   "2018:dji mavic 2 pro": {
     "src": "/images/archive/milestones/2018-dji-mavic-2-pro.jpg",
@@ -1720,12 +1720,12 @@
     "matchedTitle": "Disney+"
   },
   "2019:google stadia": {
-    "src": "/images/archive/milestones/2019-google-stadia-mark.svg",
+    "src": "/images/archive/milestones/2019-google-stadia-badge.svg",
     "alt": "Google Stadia 당시 서비스 마크",
-    "credit": "Simple Icons contributors",
-    "sourceUrl": "https://simpleicons.org/?q=Google%20Stadia",
-    "license": "CC0 1.0 · trademark",
-    "matchedTitle": "google brand mark"
+    "credit": "Back to 2000 archival rendering · Google Stadia logo reference",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Google_Stadia_logo.svg",
+    "license": "Original rendering · trademark reference",
+    "matchedTitle": "Google Stadia"
   },
   "2019:iphone 11": {
     "src": "/images/archive/milestones/2019-iphone-11.png",
@@ -1776,12 +1776,12 @@
     "matchedTitle": "airpods max"
   },
   "2020:apple fitness+": {
-    "src": "/images/archive/milestones/2020-apple-fitness-mark.svg",
+    "src": "/images/archive/milestones/2020-apple-fitness-badge.svg",
     "alt": "Apple Fitness+ 당시 서비스 마크",
-    "credit": "Simple Icons contributors",
-    "sourceUrl": "https://simpleicons.org/?q=Apple%20Fitness%2B",
-    "license": "CC0 1.0 · trademark",
-    "matchedTitle": "apple brand mark"
+    "credit": "Back to 2000 archival rendering · Apple Fitness icon reference",
+    "sourceUrl": "https://www.apple.com/apple-fitness-plus/",
+    "license": "Original rendering · trademark reference",
+    "matchedTitle": "Apple Fitness+"
   },
   "2020:clubhouse": {
     "src": "/images/archive/milestones/2020-clubhouse-mark.svg",

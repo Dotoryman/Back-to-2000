@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { LoaderCircle, Save } from "lucide-react";
 
-export function ContentForm() {
+export function ContentForm({ canPublish = true }: { canPublish?: boolean }) {
   const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -23,7 +23,7 @@ export function ContentForm() {
       upload.set("license", String(data.get("imageLicense") ?? ""));
       const uploaded = await fetch("/api/media", { method: "POST", body: upload });
       if (!uploaded.ok) return setState("error");
-      mediaId = (await uploaded.json()).id;
+      mediaId = (await uploaded.json() as { id: string }).id;
     }
 
     const response = await fetch("/api/catalog", {
@@ -43,11 +43,14 @@ export function ContentForm() {
       }),
     });
     setState(response.ok ? "saved" : "error");
-    if (response.ok) form.reset();
+    if (response.ok) {
+      form.reset();
+      window.dispatchEvent(new Event("b2000:catalog-changed"));
+    }
   }
 
   return <form className="admin-form" onSubmit={submit}>
-    <div className="form-grid"><label>유형<select name="type"><option value="website">웹사이트</option><option value="phone">휴대폰</option><option value="product">제품</option><option value="service">서비스</option><option value="program">소프트웨어</option><option value="game">게임</option><option value="event">사건</option></select></label><label>상태<select name="status"><option value="draft">초안</option><option value="review">검토</option><option value="published">공개</option></select></label></div>
+    <div className="form-grid"><label>유형<select name="type"><option value="website">웹사이트</option><option value="phone">휴대폰</option><option value="product">제품</option><option value="service">서비스</option><option value="program">소프트웨어</option><option value="game">게임</option><option value="event">사건</option></select></label><label>상태<select name="status"><option value="draft">초안</option><option value="review">검토 요청</option>{canPublish && <option value="published">공개</option>}</select></label></div>
     <div className="form-grid"><label>이름<input name="name" required placeholder="Nokia 3210" /></label><label>브랜드<input name="brand" required placeholder="Nokia" /></label></div>
     <div className="form-grid"><label>고유 주소<input name="slug" required pattern="[a-z0-9-]+" placeholder="nokia-3210" /></label><label>연도<input name="startYear" type="number" required defaultValue="2000" /></label></div>
     <div className="form-grid"><label>짧은 표제<input name="eyebrow" maxLength={100} /></label><label>포인트 색<input name="accent" type="color" defaultValue="#9bcbe2" /></label></div>
