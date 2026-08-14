@@ -126,6 +126,7 @@ test("registers a first-party member and syncs the anonymous collection", async 
   assert.match(cookie ?? "", /b2000_session=/);
   assert.match(cookie ?? "", /HttpOnly/);
   assert.match(cookie ?? "", /Secure/);
+  assert.match(cookie ?? "", /Priority=High/);
 
   const session = await miniflare.dispatchFetch("http://localhost/api/auth/session", { headers: { cookie } });
   assert.equal(session.status, 200);
@@ -145,6 +146,15 @@ test("registers a first-party member and syncs the anonymous collection", async 
   const secondDeviceCollection = await miniflare.dispatchFetch("http://localhost/api/collection", { headers: { cookie: secondCookie } });
   assert.equal(secondDeviceCollection.status, 200);
   assert.deepEqual((await secondDeviceCollection.json()).items, [{ contentId: "phone-nokia-3310", reaction: "used" }]);
+
+  const changed = await miniflare.dispatchFetch("http://localhost/api/auth/password", { method: "POST", headers: { "content-type": "application/json", cookie: secondCookie, origin: "http://localhost" }, body: JSON.stringify({ currentPassword: "archive-pass-041", newPassword: "archive-pass-043" }) });
+  assert.equal(changed.status, 200);
+  const changedCookie = changed.headers.get("set-cookie");
+  assert.match(changedCookie ?? "", /Priority=High/);
+  const revoked = await miniflare.dispatchFetch("http://localhost/api/auth/session", { headers: { cookie: secondCookie } });
+  assert.equal((await revoked.json()).authenticated, false);
+  const renewed = await miniflare.dispatchFetch("http://localhost/api/auth/session", { headers: { cookie: changedCookie } });
+  assert.equal((await renewed.json()).authenticated, true);
 });
 
 test("renders a game for every year and exposes the global game timeline", async () => {
@@ -233,8 +243,17 @@ test("exposes the v0.4.2 lineage viewer and editorial quality queue", async () =
   assert.ok(payload.quality.total >= 278);
   assert.equal(payload.quality.missingHero, 0);
   assert.equal(payload.quality.missingSource, 0);
+  assert.equal(payload.quality.needsReview, 0);
 
   const database = await databasePromise;
   const images = await database.prepare("SELECT COUNT(DISTINCT m.public_url) AS unique_images, COUNT(*) AS total FROM content_media cm JOIN media m ON m.id = cm.media_id WHERE cm.role = 'hero' AND cm.content_id IN ('milestone-2003-itunes-store','milestone-2006-windows-live-messenger','milestone-2010-facetime','milestone-2011-google','milestone-2019-google-stadia','milestone-2020-apple-fitness')").first();
   assert.equal(Number(images.unique_images), Number(images.total));
+});
+
+test("renders dedicated recovery pages", async () => {
+  const missing = await render("/archive/not-a-real-memory");
+  assert.equal(missing.status, 404);
+  const html = await missing.text();
+  assert.match(html, /LOST MEMORY/);
+  assert.match(html, /1998년으로 돌아가기/);
 });

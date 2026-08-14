@@ -2,7 +2,7 @@
 
 1998년부터 2020년까지의 웹사이트, 온라인 서비스, 휴대전화와 디지털 제품을 탐험하는 디지털 타임머신입니다.
 
-현재 기준 버전은 **0.4.2**입니다. D1 기반 추억 컬렉션과 전용 회원 시스템 위에 아카이브 품질 감사, 편집 검수 워크플로, 인터랙티브 타임머신과 제품 계보를 더했습니다.
+현재 기준 버전은 **0.4.3**입니다. D1 기반 추억 컬렉션과 운영 스튜디오 위에 전체 공개 기록 검수 완료, 계정 보안, 복구 검증과 접근성 기준을 더했습니다.
 
 ## 개발
 
@@ -17,7 +17,14 @@ npm run quality:catalog
 npm run quality:images
 ```
 
-운영 환경은 `wrangler.production.jsonc`의 `DB`(D1)와 `MEDIA`(R2) 바인딩을 사용합니다. `npm run cloudflare:backup`으로 D1 사본을 만든 뒤 `npm run cloudflare:migrate`, `npm run cloudflare:deploy` 순서로 배포합니다. 관리자 접근은 자체 회원의 `editor`·`admin` 역할로 분리되며, 비밀번호 pepper는 Worker secret `AUTH_PEPPER`로만 관리합니다.
+운영 환경은 `wrangler.production.jsonc`의 `DB`(D1)와 `MEDIA`(R2) 바인딩을 사용합니다. `npm run cloudflare:backup`으로 D1 사본을 만들고 `npm run cloudflare:verify-backup`으로 격리 복원 검증한 뒤 `npm run cloudflare:migrate`, `npm run cloudflare:deploy` 순서로 배포합니다. 관리자 접근은 자체 회원의 `editor`·`admin` 역할로 분리되며, 비밀번호 pepper는 Worker secret `AUTH_PEPPER`로만 관리합니다. 자세한 장애·복구 절차는 `docs/OPERATIONS.md`에 기록합니다.
+
+## v0.4.3 아카이브 완성도와 운영 안정화
+
+- 재검토 대기 35개 제품·서비스의 정체성, 시대적 의의와 후속 계보를 개별 서술로 보강하고 전체 278개 공개 기록을 검증 상태로 정리합니다.
+- 비밀번호 변경 시 전체 로그인 세션을 폐기하고 새 세션을 발급하며 14일 미사용 세션을 만료합니다.
+- D1 SQL 백업을 임시 로컬 데이터베이스에 실제 복원해 핵심 테이블과 레코드 수를 검사합니다.
+- 404·런타임 오류 화면, 본문 바로가기, 전역 키보드 포커스와 모션 감소 동작을 보강합니다.
 
 ## 구조
 

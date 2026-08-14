@@ -25,8 +25,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        <a className="skip-link" href="#main-content">본문으로 바로가기</a>
         <Header />
-        <main>{children}</main>
+        <main id="main-content" tabIndex={-1}>{children}</main>
         <Footer />
       </body>
     </html>

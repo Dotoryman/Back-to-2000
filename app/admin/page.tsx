@@ -11,7 +11,7 @@ export default async function AdminPage() {
     <aside>
       <strong>B·2000 Studio</strong>
       <nav aria-label="관리자 메뉴"><a href="#queue" className="active">검수 대기열</a><a href="#create">콘텐츠 추가</a><a href="#operations">운영 기준</a></nav>
-      <small>D1 CONTENT STUDIO · 0.4.2</small>
+      <small>D1 CONTENT STUDIO · 0.4.3</small>
     </aside>
     <section>
       <p className="eyebrow">ARCHIVE OPERATIONS</p>

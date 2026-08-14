@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Box, ChevronLeft, ChevronRight, Globe2, Maximize2, Smartphone, Volume2, VolumeX, X } from "lucide-react";
 import Image from "next/image";
 import { HardLink as Link } from "@/components/site/hard-link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
 import type { CatalogItem } from "@/domain/catalog/types";
 
@@ -126,12 +126,21 @@ function kindLabel(kind: CatalogItem["kind"]) {
 }
 
 function MemoryViewer({ item, close }: { item: GalleryItem; close: () => void }) {
+  const titleId = useId();
+  const dialogRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialogRef.current?.focus();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = overflow; previous?.focus(); };
+  }, []);
   return (
     <motion.div className="viewer-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => event.target === event.currentTarget && close()}>
-      <motion.article role="dialog" aria-modal="true" aria-label={`${item.name} 상세 미리보기`} className="memory-viewer" initial={{ opacity: 0, scale: .94, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .96 }} transition={{ type: "spring", damping: 24, stiffness: 260 }} style={{ "--accent": item.accent } as React.CSSProperties}>
+      <motion.article ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={titleId} className="memory-viewer" initial={{ opacity: 0, scale: .94, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: .96 }} transition={{ type: "spring", damping: 24, stiffness: 260 }} style={{ "--accent": item.accent } as React.CSSProperties}>
         <button className="viewer-close" onClick={close} aria-label="닫기"><X /></button>
         <div className="viewer-image"><MemoryVisual item={item} index={0} /></div>
-        <div className="viewer-copy"><p>{item.kind.toUpperCase()} · {item.kind === "phone" ? "출시" : "시작"} {item.year}</p><h3>{item.name}</h3><strong>{item.eyebrow}</strong><span>{item.description}</span><Link className="viewer-detail-link" href={`/archive/${item.id}`}>{item.kind === "game" ? "게임" : item.kind === "phone" || item.kind === "product" ? "제품" : "콘텐츠"} 이야기 자세히 보기</Link><div>{item.tags.map((tag) => <i key={tag}>{tag}</i>)}</div></div>
+        <div className="viewer-copy"><p>{item.kind.toUpperCase()} · {item.kind === "phone" ? "출시" : "시작"} {item.year}</p><h3 id={titleId}>{item.name}</h3><strong>{item.eyebrow}</strong><span>{item.description}</span><Link className="viewer-detail-link" href={`/archive/${item.id}`}>{item.kind === "game" ? "게임" : item.kind === "phone" || item.kind === "product" ? "제품" : "콘텐츠"} 이야기 자세히 보기</Link><div>{item.tags.map((tag) => <i key={tag}>{tag}</i>)}</div></div>
       </motion.article>
     </motion.div>
   );

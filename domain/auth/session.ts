@@ -1,10 +1,12 @@
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
 import { getDb } from "@/db";
 import { collectionItems, collections, userSessions, users } from "@/db/schema";
 import { hashSessionToken, randomSessionToken } from "./crypto";
 
 export const SESSION_COOKIE = "b2000_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30;
+const SESSION_IDLE_AGE = 60 * 60 * 24 * 14;
+const SESSION_TOUCH_INTERVAL = 60 * 60;
 const DEVICE_PATTERN = /^[A-Za-z0-9-]{20,80}$/;
 
 export type AuthUser = { id: string; username: string; displayName: string; role: "member" | "editor" | "admin" };
@@ -26,7 +28,7 @@ export function requestDeviceKey(request: Request) {
 }
 
 export function sessionCookie(token: string) {
-  return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_MAX_AGE}`;
+  return `${SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_MAX_AGE}; Priority=High`;
 }
 
 export function expiredSessionCookie() {
@@ -47,15 +49,20 @@ export async function getAuthSessionFromHeaders(headers: HeaderReader): Promise<
   if (!token) return null;
   const tokenHash = await hashSessionToken(token);
   const now = new Date();
+  const idleCutoff = new Date(now.getTime() - SESSION_IDLE_AGE * 1000);
   const [row] = await getDb().select({
     id: users.id,
     username: users.username,
     displayName: users.displayName,
     role: users.role,
+    lastSeenAt: userSessions.lastSeenAt,
   }).from(userSessions).innerJoin(users, eq(userSessions.userId, users.id))
-    .where(and(eq(userSessions.tokenHash, tokenHash), gt(userSessions.expiresAt, now))).limit(1);
+    .where(and(eq(userSessions.tokenHash, tokenHash), gt(userSessions.expiresAt, now), gt(userSessions.lastSeenAt, idleCutoff))).limit(1);
   if (!row?.username) return null;
-  return { user: { ...row, username: row.username }, tokenHash };
+  if (now.getTime() - row.lastSeenAt.getTime() >= SESSION_TOUCH_INTERVAL * 1000) {
+    await getDb().update(userSessions).set({ lastSeenAt: now }).where(eq(userSessions.tokenHash, tokenHash));
+  }
+  return { user: { id: row.id, username: row.username, displayName: row.displayName, role: row.role }, tokenHash };
 }
 
 export async function createSession(userId: string) {
@@ -63,8 +70,14 @@ export async function createSession(userId: string) {
   const tokenHash = await hashSessionToken(token);
   const now = new Date();
   const expiresAt = new Date(now.getTime() + SESSION_MAX_AGE * 1000);
+  await getDb().delete(userSessions).where(lt(userSessions.expiresAt, now));
   await getDb().insert(userSessions).values({ tokenHash, userId, expiresAt, createdAt: now, lastSeenAt: now });
   return token;
+}
+
+export async function replaceAllUserSessions(userId: string) {
+  await getDb().delete(userSessions).where(eq(userSessions.userId, userId));
+  return createSession(userId);
 }
 
 export async function deleteSession(request: Request) {

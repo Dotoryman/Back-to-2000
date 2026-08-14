@@ -1,6 +1,6 @@
 {
   "name": "back-to-2000",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -18,8 +18,10 @@
     "images:games": "node scripts/fetch-game-images.mjs",
     "quality:catalog": "tsx scripts/audit-catalog-quality.ts",
     "quality:images": "tsx scripts/audit-image-quality.ts",
+    "quality": "npm run lint && npm test && npm run quality:catalog && npm run quality:images",
     "cloudflare:types": "wrangler types worker-configuration.d.ts --config wrangler.production.jsonc",
     "cloudflare:backup": "node scripts/backup-d1.mjs",
+    "cloudflare:verify-backup": "node scripts/verify-d1-backup.mjs",
     "cloudflare:migrate": "wrangler d1 migrations apply backto2000-production --remote --config wrangler.production.jsonc",
     "cloudflare:deploy": "npm run build && wrangler deploy --config wrangler.production.jsonc"
   },
