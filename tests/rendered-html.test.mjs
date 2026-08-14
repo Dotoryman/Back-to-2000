@@ -17,6 +17,7 @@ const miniflare = new Miniflare({
   modulesRoot: repositoryRoot,
   modules: serverModules,
   d1Databases: ["DB"],
+  bindings: { AUTH_PEPPER: "integration-test-pepper-not-for-production" },
   serviceBindings: {
     ASSETS: async () => new Response("Not found", { status: 404 }),
   },

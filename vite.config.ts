@@ -12,6 +12,7 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const localBindingConfig = {
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
+  vars: { AUTH_PEPPER: "local-development-pepper-not-for-production" },
   d1_databases: d1
     ? [
         {
