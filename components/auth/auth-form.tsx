@@ -24,7 +24,7 @@ export function AuthForm() {
     if (mode === "register") body.displayName = String(form.get("displayName") ?? "");
     try {
       const response = await fetch(`/api/auth/${mode}`, { method: "POST", headers: { "Content-Type": "application/json", "x-b2000-device": getDeviceKey() }, body: JSON.stringify(body) });
-      const data = await response.json();
+      const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error ?? "요청을 완료하지 못했습니다.");
       window.location.assign("/collection");
     } catch (cause) {

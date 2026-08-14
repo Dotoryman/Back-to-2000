@@ -1,6 +1,6 @@
 {
   "name": "back-to-2000",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -10,13 +10,16 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern worker-configuration.d.ts",
     "db:generate": "drizzle-kit generate",
     "db:seed:v0.2": "tsx scripts/append-v02-catalog-seed.ts",
     "db:seed:v0.3": "tsx scripts/generate-v03-game-migration.ts",
     "db:seed:v0.3.2": "tsx scripts/generate-v032-migration.ts",
     "images:games": "node scripts/fetch-game-images.mjs",
     "quality:catalog": "tsx scripts/audit-catalog-quality.ts",
+    "quality:images": "tsx scripts/audit-image-quality.ts",
+    "cloudflare:types": "wrangler types worker-configuration.d.ts --config wrangler.production.jsonc",
+    "cloudflare:backup": "node scripts/backup-d1.mjs",
     "cloudflare:migrate": "wrangler d1 migrations apply backto2000-production --remote --config wrangler.production.jsonc",
     "cloudflare:deploy": "npm run build && wrangler deploy --config wrangler.production.jsonc"
   },

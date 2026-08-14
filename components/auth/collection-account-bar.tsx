@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export function CollectionAccountBar() {
   const [name, setName] = useState<string | null | undefined>(undefined);
-  useEffect(() => { fetch("/api/auth/session", { cache: "no-store" }).then((response) => response.json()).then((data) => setName(data.authenticated ? data.user.displayName : null)).catch(() => setName(null)); }, []);
+  useEffect(() => { fetch("/api/auth/session", { cache: "no-store" }).then((response) => response.json() as Promise<{ authenticated: boolean; user?: { displayName: string } }>).then((data) => setName(data.authenticated ? data.user?.displayName ?? null : null)).catch(() => setName(null)); }, []);
   if (name === undefined) return null;
   return name
     ? <div className="collection-account-bar"><span><strong>{name}</strong>님의 컬렉션은 계정에 동기화되고 있습니다.</span><Link href="/account">계정 관리</Link></div>

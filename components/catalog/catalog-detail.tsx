@@ -5,6 +5,7 @@ import { CollectionToggle } from "./collection-toggle";
 import { buildCatalogStory } from "@/domain/catalog/story";
 import type { CatalogItem } from "@/domain/catalog/types";
 import { SITE_URL } from "@/domain/site";
+import { EvolutionCompare } from "./evolution-compare";
 
 const kindLabels: Record<CatalogItem["kind"], string> = {
   website: "WEBSITE", service: "SERVICE", phone: "MOBILE", product: "PRODUCT",
@@ -19,7 +20,7 @@ const detailCopy = {
   product: { heading: "하나의 제품이 시대를 바꾸는 방식", identity: "어떤 제품인가", significance: "왜 중요했나", label: "MAKER" },
 } as const;
 
-export function CatalogDetail({ item, next }: { item: CatalogItem; next?: CatalogItem }) {
+export function CatalogDetail({ item, next, lineage = [] }: { item: CatalogItem; next?: CatalogItem; lineage?: CatalogItem[] }) {
   const story = buildCatalogStory(item, next);
   const Icon = icons[item.kind];
   const copy = item.kind in detailCopy ? detailCopy[item.kind as keyof typeof detailCopy] : { heading: "하나의 기억이 시대를 바꾸는 방식", identity: "무엇이었나", significance: "왜 중요했나", label: "CREATOR" };
@@ -67,6 +68,9 @@ export function CatalogDetail({ item, next }: { item: CatalogItem; next?: Catalo
       <p>REMEMBERED FOR</p>
       <div>{item.highlights.map((highlight, index) => <span key={highlight}><small>{String(index + 1).padStart(2, "0")}</small>{highlight}</span>)}</div>
     </section>
+
+    {lineage.length > 1 && <section className="detail-lineage"><p>PRODUCT LINEAGE</p><div>{lineage.map((entry) => <Link key={entry.id} className={entry.id === item.id ? "active" : ""} href={`/archive/${entry.id}`}><small>{entry.year}</small><strong>{entry.name}</strong></Link>)}</div></section>}
+    {lineage.length > 1 && <EvolutionCompare before={lineage[Math.max(0, lineage.findIndex((entry) => entry.id === item.id) - 1)]} after={item} />}
 
     {next && <Link className="detail-next" href={`/archive/${next.id}`}><span><small>NEXT EVOLUTION · {next.year}</small><strong>{next.name}</strong></span><ArrowRight /></Link>}
   </article>;

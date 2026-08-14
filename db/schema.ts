@@ -137,6 +137,16 @@ export const users = sqliteTable("users", {
   role: text("role", { enum: ["member", "editor", "admin"] }).notNull().default("member"),
   ...audit,
 }, (t) => [uniqueIndex("uq_users_username").on(t.username), uniqueIndex("uq_users_email").on(t.email)]);
+export const contentReviewEvents = sqliteTable("content_review_events", {
+  id: text("id").primaryKey(),
+  contentId: text("content_id").notNull().references(() => contentItems.id, { onDelete: "cascade" }),
+  actorId: text("actor_id").references(() => users.id, { onDelete: "set null" }),
+  action: text("action", { enum: ["created", "edited", "submitted", "published", "returned", "verified", "archived", "media_replaced"] }).notNull(),
+  fromStatus: text("from_status"),
+  toStatus: text("to_status"),
+  note: text("note"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+}, (t) => [index("idx_review_events_content_created").on(t.contentId, t.createdAt), index("idx_review_events_actor_created").on(t.actorId, t.createdAt)]);
 export const userSessions = sqliteTable("user_sessions", {
   tokenHash: text("token_hash").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

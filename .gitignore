@@ -38,6 +38,7 @@ yarn-error.log*
 /dist/
 /.wrangler/
 /outputs/
+/backups/
 /work/
 .codex-dev.log
 .codex-dev-error.log

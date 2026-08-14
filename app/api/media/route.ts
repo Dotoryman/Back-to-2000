@@ -2,12 +2,14 @@ import { createMediaKey, getMediaBucket } from "@/infrastructure/media/r2";
 import { getDb } from "@/db";
 import { media } from "@/db/schema";
 import { adminError, getAdminAccess } from "@/infrastructure/auth/admin";
+import { isSameOriginMutation } from "@/domain/auth/session";
 const MAX_BYTES = 10 * 1024 * 1024;
 const TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"]);
 
 export async function POST(request: Request) {
-  const access = getAdminAccess(request.headers);
+  const access = await getAdminAccess(request.headers);
   if (!access.allowed) return adminError(access);
+  if (!isSameOriginMutation(request)) return Response.json({ error: "invalid origin" }, { status: 403 });
 
   const form = await request.formData();
   const file = form.get("file");
@@ -58,8 +60,9 @@ export async function POST(request: Request) {
     }, { status: 201 });
   } catch (error) {
     if (uploaded && bucket) await bucket.delete(key).catch(() => undefined);
+    console.error(JSON.stringify({ message: "media upload failed", error: error instanceof Error ? error.message : String(error) }));
     return Response.json({
-      error: error instanceof Error ? error.message : "upload failed",
+      error: "upload failed",
     }, { status: 503 });
   }
 }

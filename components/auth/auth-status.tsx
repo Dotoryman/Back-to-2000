@@ -9,8 +9,8 @@ export function AuthStatus() {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let active = true;
-    fetch("/api/auth/session", { cache: "no-store" }).then((response) => response.json()).then((data) => {
-      if (active) setName(data.authenticated ? data.user.displayName : null);
+    fetch("/api/auth/session", { cache: "no-store" }).then((response) => response.json() as Promise<{ authenticated: boolean; user?: { displayName: string } }>).then((data) => {
+      if (active) setName(data.authenticated ? data.user?.displayName ?? null : null);
     }).catch(() => {}).finally(() => { if (active) setLoaded(true); });
     return () => { active = false; };
   }, []);

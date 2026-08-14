@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { CatalogDetail } from "@/components/catalog/catalog-detail";
 import { getPublishedCatalogItem, listPublishedCatalog } from "@/domain/catalog/repository";
-import { findNextEvolution } from "@/domain/catalog/story";
+import { findEvolutionLineage, findNextEvolution } from "@/domain/catalog/story";
 import type { Metadata } from "next";
 import { catalogItemMetadata } from "@/domain/seo";
 
@@ -15,5 +15,5 @@ export default async function ArchiveDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const [item, catalog] = await Promise.all([getPublishedCatalogItem(id), listPublishedCatalog()]);
   if (!item) notFound();
-  return <CatalogDetail item={item} next={findNextEvolution(item, catalog)} />;
+  return <CatalogDetail item={item} next={findNextEvolution(item, catalog)} lineage={findEvolutionLineage(item, catalog)} />;
 }

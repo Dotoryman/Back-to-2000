@@ -218,3 +218,23 @@ test("serves the public archive from the seeded D1 catalog", async () => {
   assert.match(html, /MacBook Air M1/);
   assert.match(html, /Galaxy Z Flip/);
 });
+
+test("exposes the v0.4.2 lineage viewer and editorial quality queue", async () => {
+  const detail = await render("/archive/milestone-2009-iphone-3gs");
+  assert.equal(detail.status, 200);
+  const detailHtml = await detail.text();
+  assert.match(detailHtml, /PRODUCT LINEAGE/);
+  assert.match(detailHtml, /evolution-compare/);
+  assert.match(detailHtml, /디자인의 변화를 직접 비교해 보세요/);
+
+  const queue = await miniflare.dispatchFetch("http://localhost/api/catalog?scope=admin");
+  assert.equal(queue.status, 200);
+  const payload = await queue.json();
+  assert.ok(payload.quality.total >= 278);
+  assert.equal(payload.quality.missingHero, 0);
+  assert.equal(payload.quality.missingSource, 0);
+
+  const database = await databasePromise;
+  const images = await database.prepare("SELECT COUNT(DISTINCT m.public_url) AS unique_images, COUNT(*) AS total FROM content_media cm JOIN media m ON m.id = cm.media_id WHERE cm.role = 'hero' AND cm.content_id IN ('milestone-2003-itunes-store','milestone-2006-windows-live-messenger','milestone-2010-facetime','milestone-2011-google','milestone-2019-google-stadia','milestone-2020-apple-fitness')").first();
+  assert.equal(Number(images.unique_images), Number(images.total));
+});
