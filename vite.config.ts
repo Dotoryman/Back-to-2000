@@ -1,8 +1,7 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
 
-const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
-  "00000000-0000-4000-8000-000000000000";
+const LOCAL_DATABASE_ID = "1ec88810-4b8a-423a-ad23-6585bb9fbb50";
 
 const d1 = "DB";
 const r2 = "MEDIA";
@@ -17,8 +16,8 @@ const localBindingConfig = {
     ? [
         {
           binding: d1,
-          database_name: "site-creator-d1",
-          database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
+          database_name: "backto2000-production",
+          database_id: LOCAL_DATABASE_ID,
         },
       ]
     : [],
