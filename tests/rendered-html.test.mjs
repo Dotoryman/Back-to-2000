@@ -181,6 +181,22 @@ test("removes starter preview markers", async () => {
   assert.match(css, /--cream:/);
 });
 
+test("uses stable document navigation for links and search", async () => {
+  const [authStatus, header, hardLink, searchBox] = await Promise.all([
+    readFile(new URL("../components/auth/auth-status.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/site/header.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/site/hard-link.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../components/search/search-box.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(authStatus, /from ["']next\/link["']/);
+  assert.doesNotMatch(header, /from ["']next\/link["']/);
+  assert.match(authStatus, /HardLink as Link/);
+  assert.match(hardLink, /<a href=\{href\}/);
+  assert.match(hardLink, />\{children\}<\/a>/);
+  assert.doesNotMatch(searchBox, /useRouter|router\.push/);
+  assert.match(searchBox, /window\.location\.assign/);
+});
+
 test("renders editorial product stories without source labels", async () => {
   const response = await render("/archive/milestone-2020-macbook-air-m1");
   assert.equal(response.status, 200);

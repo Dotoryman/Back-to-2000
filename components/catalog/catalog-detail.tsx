@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight, Box, Gamepad2, Globe2, MessageCircle, Monitor, Smartphone } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import { CollectionToggle } from "./collection-toggle";
 import { buildCatalogStory } from "@/domain/catalog/story";
 import type { CatalogItem } from "@/domain/catalog/types";

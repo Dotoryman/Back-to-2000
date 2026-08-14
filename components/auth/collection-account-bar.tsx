@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import { useEffect, useState } from "react";
 
 export function CollectionAccountBar() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu, Search, X } from "lucide-react";
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import { useState } from "react";
 import { AuthStatus } from "@/components/auth/auth-status";
 

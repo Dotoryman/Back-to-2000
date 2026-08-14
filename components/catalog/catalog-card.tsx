@@ -1,6 +1,6 @@
 import { ArrowUpRight, Box, Globe2, MessageCircle, Smartphone } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import type { CatalogItem } from "@/domain/catalog/types";
 
 const icons = { website: Globe2, phone: Smartphone, product: Box, service: MessageCircle, event: Globe2, game: Globe2, program: Globe2 };

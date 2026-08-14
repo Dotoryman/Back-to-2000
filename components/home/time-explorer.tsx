@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Box, ChevronLeft, ChevronRight, Globe2, Smartphone, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import { useMemo, useState } from "react";
 import { isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
 import type { CatalogItem } from "@/domain/catalog/types";
