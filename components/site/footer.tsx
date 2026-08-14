@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 
 export function Footer() {
   return (

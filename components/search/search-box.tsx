@@ -1,13 +1,14 @@
 "use client";
 
 import { ArrowRight, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 export function SearchBox({ compact = false, initialValue = "" }: { compact?: boolean; initialValue?: string }) {
   const [query, setQuery] = useState(initialValue);
-  const router = useRouter();
-  const submit = (event: FormEvent) => { event.preventDefault(); if (query.trim()) router.push(`/search?q=${encodeURIComponent(query.trim())}`); };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (query.trim()) window.location.assign(`/search?q=${encodeURIComponent(query.trim())}`);
+  };
   return (
     <form className={compact ? "search-box compact" : "search-box"} onSubmit={submit} role="search">
       <Search size={compact ? 18 : 21} />

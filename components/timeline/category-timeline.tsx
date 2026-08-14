@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Gamepad2, Globe2, Smartphone } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import { useMemo, useState } from "react";
 import { isItemVisibleInYear, timelineYears } from "@/domain/catalog/data";
 import type { CatalogItem } from "@/domain/catalog/types";

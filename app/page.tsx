@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { HardLink as Link } from "@/components/site/hard-link";
 import { ArrowRight, Gamepad2, Globe2, Smartphone } from "lucide-react";
 import { TimeExplorer } from "@/components/home/time-explorer";
 import { listPublishedCatalog } from "@/domain/catalog/repository";
