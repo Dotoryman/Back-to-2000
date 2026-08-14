@@ -3,6 +3,7 @@
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { refreshCollection, useCollection, type MemoryReaction } from "@/components/catalog/collection-store";
 import type { CatalogItem } from "@/domain/catalog/types";
+import { CollectionAccountBar } from "@/components/auth/collection-account-bar";
 
 const reactionLabels: Record<MemoryReaction, string> = { used: "써봤어요", remembered: "기억나요", wanted: "갖고 싶었어요" };
 
@@ -14,7 +15,8 @@ export function CollectionView({ catalog }: { catalog: CatalogItem[] }) {
   const reactions = Object.values(collection.items).reduce<Record<string, number>>((result, item) => ({ ...result, [item]: (result[item] ?? 0) + 1 }), {});
   const primeYear = years[0]?.[0];
   return <div className="subpage page-width">
-    <div className="subpage-head collection-head"><p className="eyebrow">MY DIGITAL MEMORY</p><h1 className="page-title">나의 디지털 기억.</h1><p>보는 아카이브에서, 나의 기억을 모으는 아카이브로.</p></div>
+    <div className="subpage-head collection-head"><p className="eyebrow">MY DIGITAL MEMORY</p><h1 className="page-title">나의 디지털 기억.</h1><p>제품과 서비스에 남긴 반응을 한곳에 모았습니다.</p></div>
+    <CollectionAccountBar />
     {collection.loading && <div className="collection-loading">D1에서 나의 기억을 불러오는 중입니다.</div>}
     {collection.error && <button className="collection-retry" onClick={() => void refreshCollection()}>{collection.error} 다시 시도</button>}
     {!collection.loading && items.length > 0 && <>

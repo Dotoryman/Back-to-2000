@@ -3,6 +3,7 @@
 import { Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { AuthStatus } from "@/components/auth/auth-status";
 
 const nav = [
   ["연도", "/years/2004"],
@@ -23,6 +24,7 @@ export function Header() {
           <Link href="/admin" className="admin-link" onClick={() => setOpen(false)}>관리</Link>
         </nav>
         <div className="nav-actions">
+          <AuthStatus />
           <Link href="/search" className="icon-button" aria-label="검색"><Search size={18} /></Link>
           <button className="icon-button menu-button" onClick={() => setOpen((value) => !value)} aria-label="메뉴 열기" aria-expanded={open}>
             {open ? <X size={19} /> : <Menu size={19} />}

@@ -10,7 +10,6 @@ export default async function Home() {
   return <>
     <TimeExplorer catalog={catalog} />
     <section className="category-shortcuts page-width">
-      <div className="shortcut-heading"><p>EXPLORE BY TYPE</p><h2>분야별 타임라인</h2><span>한눈에 고르고 바로 시간여행을 시작하세요.</span></div>
       <div className="shortcut-grid">
         <Shortcut href="/timelines/website" icon={<Globe2 />} index="01" label="WEB & SERVICE" title="웹 & 서비스" description="포털과 메신저의 변화" />
         <Shortcut href="/timelines/phone" icon={<Smartphone />} index="02" label="MOBILE" title="휴대전화" description="피처폰에서 스마트폰까지" />
@@ -18,7 +17,7 @@ export default async function Home() {
       </div>
     </section>
     <section className="archive-note">
-      <div><p>MY DIGITAL MEMORY</p><h2>보는 아카이브에서, 나의 기억을 모으는 아카이브로.</h2></div>
+      <div><p>MY DIGITAL MEMORY</p><h2>Archive</h2></div>
       <div><p>써봤던 제품과 기억나는 서비스를 골라 나만의 디지털 연대기를 만들어보세요.</p><Link href="/collection">내 추억 모아보기 <ArrowRight /></Link></div>
     </section>
   </>;

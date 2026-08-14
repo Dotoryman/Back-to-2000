@@ -18,7 +18,7 @@ function emit(next: CollectionState) {
   listeners.forEach((listener) => listener());
 }
 
-function deviceKey() {
+export function getDeviceKey() {
   let key = localStorage.getItem(DEVICE_KEY);
   if (!key) {
     key = crypto.randomUUID();
@@ -32,7 +32,7 @@ function normalize(payload: { items?: Array<{ contentId: string; reaction: Memor
 }
 
 async function request(input: RequestInfo, init?: RequestInit) {
-  const response = await fetch(input, { ...init, headers: { "Content-Type": "application/json", "x-b2000-device": deviceKey(), ...init?.headers }, cache: "no-store" });
+  const response = await fetch(input, { ...init, headers: { "Content-Type": "application/json", "x-b2000-device": getDeviceKey(), ...init?.headers }, cache: "no-store" });
   if (!response.ok) throw new Error(`collection request failed: ${response.status}`);
   return normalize(await response.json());
 }
