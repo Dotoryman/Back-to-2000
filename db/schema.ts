@@ -126,8 +126,31 @@ export const contentRevisions = sqliteTable("content_revisions", {
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
 }, (t) => [uniqueIndex("uq_content_revision_version").on(t.contentId, t.version), index("idx_content_revisions_content_created").on(t.contentId, t.createdAt)]);
 
-export const users = sqliteTable("users", { id: text("id").primaryKey(), email: text("email"), displayName: text("display_name").notNull(), role: text("role", { enum: ["member", "editor", "admin"] }).notNull().default("member"), ...audit }, (t) => [uniqueIndex("uq_users_email").on(t.email)]);
-export const collections = sqliteTable("collections", { id: text("id").primaryKey(), userId: text("user_id").references(() => users.id, { onDelete: "cascade" }), deviceKey: text("device_key"), name: text("name").notNull().default("내 추억 컬렉션"), isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false), ...audit }, (t) => [index("idx_collections_user_id").on(t.userId), uniqueIndex("uq_collections_device_key").on(t.deviceKey)]);
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey(),
+  username: text("username"),
+  email: text("email"),
+  displayName: text("display_name").notNull(),
+  passwordHash: text("password_hash"),
+  passwordSalt: text("password_salt"),
+  passwordIterations: integer("password_iterations").notNull().default(600000),
+  role: text("role", { enum: ["member", "editor", "admin"] }).notNull().default("member"),
+  ...audit,
+}, (t) => [uniqueIndex("uq_users_username").on(t.username), uniqueIndex("uq_users_email").on(t.email)]);
+export const userSessions = sqliteTable("user_sessions", {
+  tokenHash: text("token_hash").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+  lastSeenAt: integer("last_seen_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+}, (t) => [index("idx_user_sessions_user_id").on(t.userId), index("idx_user_sessions_expires_at").on(t.expiresAt)]);
+export const authRateLimits = sqliteTable("auth_rate_limits", {
+  key: text("key").primaryKey(),
+  attempts: integer("attempts").notNull().default(0),
+  windowStartedAt: integer("window_started_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+export const collections = sqliteTable("collections", { id: text("id").primaryKey(), userId: text("user_id").references(() => users.id, { onDelete: "cascade" }), deviceKey: text("device_key"), name: text("name").notNull().default("내 추억 컬렉션"), isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false), ...audit }, (t) => [uniqueIndex("uq_collections_user_id").on(t.userId), uniqueIndex("uq_collections_device_key").on(t.deviceKey)]);
 export const collectionItems = sqliteTable("collection_items", {
   collectionId: text("collection_id").notNull().references(() => collections.id, { onDelete: "cascade" }),
   contentId: text("content_id").notNull().references(() => contentItems.id, { onDelete: "cascade" }),

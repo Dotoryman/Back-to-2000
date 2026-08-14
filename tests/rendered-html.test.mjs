@@ -87,7 +87,8 @@ test("server-renders the Back to 2000 experience", async () => {
   assert.match(html, /휴대전화/);
   assert.match(html, /GLOBAL GAME/);
   assert.match(html, /category-shortcuts/);
-  assert.match(html, /보는 아카이브에서, 나의 기억을 모으는 아카이브로/);
+  assert.doesNotMatch(html, /분야별 타임라인/);
+  assert.match(html, />Archive</);
   assert.match(html, /2020/);
   assert.match(html, /mobile-year-stepper/);
   assert.match(html, /연도 빠른 선택/);
@@ -109,6 +110,40 @@ test("persists an anonymous D1 memory collection with structured reactions", asy
   const removed = await miniflare.dispatchFetch("http://localhost/api/collection?contentId=phone-nokia-3310", { method: "DELETE", headers });
   assert.equal(removed.status, 200);
   assert.deepEqual((await removed.json()).items, []);
+});
+
+test("registers a first-party member and syncs the anonymous collection", async () => {
+  await databasePromise;
+  const device = "00000000-0000-4000-8000-000000000041";
+  const headers = { "content-type": "application/json", "x-b2000-device": device, origin: "http://localhost" };
+  const memory = await miniflare.dispatchFetch("http://localhost/api/collection", { method: "POST", headers, body: JSON.stringify({ contentId: "phone-nokia-3310", reaction: "used" }) });
+  assert.equal(memory.status, 200);
+
+  const registered = await miniflare.dispatchFetch("http://localhost/api/auth/register", { method: "POST", headers, body: JSON.stringify({ username: "memorytester", displayName: "기억여행자", password: "archive-pass-041" }) });
+  assert.equal(registered.status, 201);
+  const cookie = registered.headers.get("set-cookie");
+  assert.match(cookie ?? "", /b2000_session=/);
+  assert.match(cookie ?? "", /HttpOnly/);
+  assert.match(cookie ?? "", /Secure/);
+
+  const session = await miniflare.dispatchFetch("http://localhost/api/auth/session", { headers: { cookie } });
+  assert.equal(session.status, 200);
+  assert.equal((await session.json()).user.username, "memorytester");
+
+  const synced = await miniflare.dispatchFetch("http://localhost/api/collection", { headers: { cookie } });
+  assert.equal(synced.status, 200);
+  assert.deepEqual((await synced.json()).items, [{ contentId: "phone-nokia-3310", reaction: "used" }]);
+
+  const loggedOut = await miniflare.dispatchFetch("http://localhost/api/auth/logout", { method: "POST", headers: { cookie, origin: "http://localhost" } });
+  assert.equal(loggedOut.status, 200);
+
+  const anotherDevice = { "content-type": "application/json", "x-b2000-device": "00000000-0000-4000-8000-000000000042", origin: "http://localhost" };
+  const loggedIn = await miniflare.dispatchFetch("http://localhost/api/auth/login", { method: "POST", headers: anotherDevice, body: JSON.stringify({ username: "memorytester", password: "archive-pass-041" }) });
+  assert.equal(loggedIn.status, 200);
+  const secondCookie = loggedIn.headers.get("set-cookie");
+  const secondDeviceCollection = await miniflare.dispatchFetch("http://localhost/api/collection", { headers: { cookie: secondCookie } });
+  assert.equal(secondDeviceCollection.status, 200);
+  assert.deepEqual((await secondDeviceCollection.json()).items, [{ contentId: "phone-nokia-3310", reaction: "used" }]);
 });
 
 test("renders a game for every year and exposes the global game timeline", async () => {
