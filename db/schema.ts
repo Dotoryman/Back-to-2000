@@ -133,7 +133,7 @@ export const users = sqliteTable("users", {
   displayName: text("display_name").notNull(),
   passwordHash: text("password_hash"),
   passwordSalt: text("password_salt"),
-  passwordIterations: integer("password_iterations").notNull().default(600000),
+  passwordIterations: integer("password_iterations").notNull().default(100000),
   role: text("role", { enum: ["member", "editor", "admin"] }).notNull().default("member"),
   ...audit,
 }, (t) => [uniqueIndex("uq_users_username").on(t.username), uniqueIndex("uq_users_email").on(t.email)]);
