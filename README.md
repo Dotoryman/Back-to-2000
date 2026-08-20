@@ -70,4 +70,4 @@ docs/            운영, 복구, 로드맵 문서
 - [운영·복구 안내](docs/OPERATIONS.md): 백업, 복원, 배포, 장애 대응
 - [로드맵](docs/ROADMAP.md): 다음 개선 계획
 
-과거 버전의 상세 변경 사항은 [CHANGELOG.md](CHANGELOG.md)에서 확인할 수 있습니다.
+과거 버전의 상세 변경 사항은 [CHANGELOG.md](CHANGELOG.md)에서 확인할 수 있습니다...
