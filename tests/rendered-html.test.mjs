@@ -278,6 +278,17 @@ test("caches public catalog JSON but never administrator or session requests", a
   assert.equal(collection.headers.get("X-BackTo2000-Cache"), null);
 });
 
+test("keeps anonymous public HTML cached while private pages bypass it", async () => {
+  const url = "https://archive.example/years/2020";
+  const first = await miniflare.dispatchFetch(url, { headers: { accept: "text/html" } });
+  assert.equal(first.headers.get("X-BackTo2000-Cache"), "MISS");
+  await first.text();
+  const second = await miniflare.dispatchFetch(url, { headers: { accept: "text/html" } });
+  assert.equal(second.headers.get("X-BackTo2000-Cache"), "HIT");
+  const account = await miniflare.dispatchFetch("https://archive.example/account", { headers: { accept: "text/html" } });
+  assert.equal(account.headers.get("X-BackTo2000-Cache"), null);
+});
+
 test("successful editorial changes invalidate public HTML and catalog JSON immediately", async () => {
   const database = await databasePromise;
   const id = "phone-nokia-3310";
