@@ -99,7 +99,6 @@ async function bumpCatalogVersion(env: Env) {
 
 function isCacheableResponse(response: Response, request: Request) {
   if (!response.ok || response.headers.has("set-cookie")) return false;
-  if (/private|no-store/i.test(response.headers.get("cache-control") ?? "")) return false;
   const contentType = response.headers.get("content-type") ?? "";
   const pathname = new URL(request.url).pathname;
   if (pathname === "/api/catalog") return contentType.includes("application/json");
