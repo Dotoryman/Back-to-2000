@@ -112,8 +112,8 @@ export async function mergeDeviceCollection(userId: string, deviceKey: string | 
   return targetId;
 }
 
-export async function resolveCollectionId(request: Request, create = false) {
-  const auth = await getAuthSession(request);
+export async function resolveCollectionId(request: Request, create = false, session?: Awaited<ReturnType<typeof getAuthSession>>) {
+  const auth = session === undefined ? await getAuthSession(request) : session;
   if (auth) return create ? ensureUserCollection(auth.user.id) : userCollectionId(auth.user.id);
   const key = requestDeviceKey(request);
   if (!key) return undefined;

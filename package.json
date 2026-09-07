@@ -1,6 +1,6 @@
 {
   "name": "back-to-2000",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -9,7 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "test": "npm run build && node --test tests/catalog-queries.test.mjs && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern worker-configuration.d.ts",
     "db:generate": "drizzle-kit generate",
     "db:seed:v0.2": "tsx scripts/append-v02-catalog-seed.ts",

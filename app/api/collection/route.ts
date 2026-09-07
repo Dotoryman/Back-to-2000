@@ -36,9 +36,10 @@ async function payload(collectionId?: string) {
 }
 
 export async function GET(request: Request) {
-  if (!(await getAuthSession(request)) && !requestDeviceKey(request)) return json({ error: "invalid device key" }, { status: 400 });
+  const auth = await getAuthSession(request);
+  if (!auth && !requestDeviceKey(request)) return json({ error: "invalid device key" }, { status: 400 });
   try {
-    return json(await payload(await resolveCollectionId(request)));
+    return json(await payload(await resolveCollectionId(request, false, auth)));
   } catch (error) {
     console.error("collection GET failed", error);
     return json({ error: "collection unavailable" }, { status: 503 });
@@ -46,14 +47,15 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!(await getAuthSession(request)) && !requestDeviceKey(request)) return json({ error: "invalid device key" }, { status: 400 });
+  const auth = await getAuthSession(request);
+  if (!auth && !requestDeviceKey(request)) return json({ error: "invalid device key" }, { status: 400 });
   const parsed = mutation.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ error: "invalid reaction" }, { status: 400 });
   try {
     const db = getDb();
     const [content] = await db.select({ id: contentItems.id }).from(contentItems).where(and(eq(contentItems.id, parsed.data.contentId), eq(contentItems.status, "published"))).limit(1);
     if (!content) return json({ error: "content not found" }, { status: 404 });
-    const collectionId = await resolveCollectionId(request, true);
+    const collectionId = await resolveCollectionId(request, true, auth);
     if (!collectionId) return json({ error: "collection unavailable" }, { status: 503 });
     const now = new Date();
     await db.insert(collectionItems).values({ collectionId, contentId: content.id, reaction: parsed.data.reaction, createdAt: now, updatedAt: now }).onConflictDoUpdate({
@@ -70,10 +72,11 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const contentId = new URL(request.url).searchParams.get("contentId");
-  if (!(await getAuthSession(request)) && !requestDeviceKey(request)) return json({ error: "invalid request" }, { status: 400 });
+  const auth = await getAuthSession(request);
+  if (!auth && !requestDeviceKey(request)) return json({ error: "invalid request" }, { status: 400 });
   if (!contentId) return json({ error: "invalid request" }, { status: 400 });
   try {
-    const collectionId = await resolveCollectionId(request);
+    const collectionId = await resolveCollectionId(request, false, auth);
     if (collectionId) await getDb().delete(collectionItems).where(and(eq(collectionItems.collectionId, collectionId), eq(collectionItems.contentId, contentId)));
     return json(await payload(collectionId));
   } catch (error) {
