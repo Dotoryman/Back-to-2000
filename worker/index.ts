@@ -1,6 +1,6 @@
 import handler from "vinext/server/app-router-entry";
 
-const PUBLIC_CACHE_NAME = "backto2000-public-v1";
+const PUBLIC_CACHE_NAME = "backto2000-public-v2";
 const PUBLIC_CACHE_TTL_SECONDS = 6 * 60 * 60;
 const CATALOG_VERSION_QUERY = "SELECT version FROM catalog_cache_version WHERE id = 1";
 
@@ -12,16 +12,26 @@ const worker = {
       return response;
     }
 
-    if (!isPublicDocumentRequest(request)) return handler.fetch(request, env, ctx);
+    if (!isPublicDocumentRequest(request) && !isPublicCatalogRequest(request)) {
+      const response = await handler.fetch(request, env, ctx);
+      if (new URL(request.url).pathname === "/api/catalog") {
+        const privateResponse = new Response(response.body, response);
+        privateResponse.headers.set("Cache-Control", "private, no-store");
+        return privateResponse;
+      }
+      return response;
+    }
 
     const cache = await caches.open(PUBLIC_CACHE_NAME);
     const version = await getCatalogVersion(env);
+    // Never reuse a made-up old cache version when D1 is unavailable.
+    if (version === null) return withCacheStatus(await handler.fetch(request, env, ctx), "BYPASS");
     const cacheKey = createPublicCacheKey(request, version);
     const cached = await cache.match(cacheKey);
     if (cached) return withCacheStatus(cached, "HIT");
 
     const response = await handler.fetch(request, env, ctx);
-    if (!isCacheableResponse(response)) return withCacheStatus(response, "BYPASS");
+    if (!isCacheableResponse(response, request)) return withCacheStatus(response, "BYPASS");
 
     const cacheResponse = new Response(response.body, response);
     cacheResponse.headers.set("Cache-Control", `public, max-age=60, s-maxage=${PUBLIC_CACHE_TTL_SECONDS}`);
@@ -41,13 +51,16 @@ function isPublicDocumentRequest(request: Request) {
   if (request.headers.get("cookie")?.includes("b2000_session=")) return false;
 
   const pathname = new URL(request.url).pathname;
-  return ![
-    "/account",
-    "/admin",
-    "/collection",
-    "/login",
-    "/register",
-  ].some((privatePath) => pathname === privatePath || pathname.startsWith(`${privatePath}/`));
+  return pathname === "/" || pathname === "/search"
+    || /^\/(years|categories|websites|phones|timelines|archive)\/[^/]+\/?$/.test(pathname);
+}
+
+function isPublicCatalogRequest(request: Request) {
+  const url = new URL(request.url);
+  if (request.method !== "GET" || request.headers.has("authorization") || request.headers.has("cookie")) return false;
+  // Local development has a separate administrator access policy.
+  if (["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) return false;
+  return url.pathname === "/api/catalog" || url.pathname === "/sitemap.xml";
 }
 
 function isCatalogMutation(request: Request) {
@@ -62,7 +75,7 @@ function createPublicCacheKey(request: Request, version: number) {
   cacheUrl.pathname = source.pathname;
   if (source.pathname === "/search") {
     const query = source.searchParams.get("q")?.trim();
-    if (query) cacheUrl.searchParams.set("q", query.slice(0, 100));
+    if (query) cacheUrl.searchParams.set("q", query);
   }
   cacheUrl.searchParams.set("__catalog", String(version));
   return new Request(cacheUrl, { method: "GET" });
@@ -71,10 +84,10 @@ function createPublicCacheKey(request: Request, version: number) {
 async function getCatalogVersion(env: Env) {
   try {
     const row = await env.DB.prepare(CATALOG_VERSION_QUERY).first<{ version: number }>();
-    return row?.version ?? 1;
+    return row?.version ?? null;
   } catch (error) {
     console.warn(JSON.stringify({ message: "catalog cache version unavailable", error: error instanceof Error ? error.message : String(error) }));
-    return 1;
+    return null;
   }
 }
 
@@ -84,9 +97,13 @@ async function bumpCatalogVersion(env: Env) {
   ).run();
 }
 
-function isCacheableResponse(response: Response) {
+function isCacheableResponse(response: Response, request: Request) {
   if (!response.ok || response.headers.has("set-cookie")) return false;
+  if (/private|no-store/i.test(response.headers.get("cache-control") ?? "")) return false;
   const contentType = response.headers.get("content-type") ?? "";
+  const pathname = new URL(request.url).pathname;
+  if (pathname === "/api/catalog") return contentType.includes("application/json");
+  if (pathname === "/sitemap.xml") return contentType.includes("xml");
   return contentType.includes("text/html");
 }
 

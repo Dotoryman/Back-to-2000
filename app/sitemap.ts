@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/domain/site";
-import { listCatalogCategories, listPublishedCatalog, listPublishedEras } from "@/domain/catalog/repository";
+import { listCatalogCategories, listPublishedCatalogIds, listPublishedEras } from "@/domain/catalog/repository";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [catalog, categories, eras] = await Promise.all([listPublishedCatalog(), listCatalogCategories(), listPublishedEras()]);
+  const [catalog, categories, eras] = await Promise.all([listPublishedCatalogIds(), listCatalogCategories(), listPublishedEras()]);
   const paths = [
     "",
     "/search",

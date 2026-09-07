@@ -62,6 +62,8 @@ export const contentItems = sqliteTable("content_items", {
   index("idx_content_type_status_year").on(t.type, t.status, t.startYear),
   index("idx_content_quality_status").on(t.qualityStatus, t.status),
   index("idx_content_brand_id").on(t.brandId),
+  index("idx_content_public_order").on(t.status, t.startYear, t.name),
+  index("idx_content_public_featured_order").on(t.status, t.featured, t.startYear, t.name),
 ]);
 
 export const contentYears = sqliteTable("content_years", {

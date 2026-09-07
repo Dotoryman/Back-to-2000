@@ -257,3 +257,65 @@ test("renders dedicated recovery pages", async () => {
   assert.match(html, /LOST MEMORY/);
   assert.match(html, /1998년으로 돌아가기/);
 });
+
+test("caches public catalog JSON but never administrator or session requests", async () => {
+  const publicUrl = "https://archive.example/api/catalog";
+  const first = await miniflare.dispatchFetch(publicUrl);
+  assert.equal(first.status, 200);
+  assert.equal(first.headers.get("X-BackTo2000-Cache"), "MISS");
+  const initial = await first.json();
+  assert.ok(initial.items.length >= 278);
+  const second = await miniflare.dispatchFetch(publicUrl);
+  assert.equal(second.headers.get("X-BackTo2000-Cache"), "HIT");
+  assert.deepEqual(await second.json(), initial);
+  const privateResponse = await miniflare.dispatchFetch(publicUrl, { headers: { cookie: "b2000_session=invalid-session" } });
+  assert.equal(privateResponse.headers.get("Cache-Control"), "private, no-store");
+  assert.notEqual(privateResponse.headers.get("X-BackTo2000-Cache"), "HIT");
+  const admin = await miniflare.dispatchFetch("http://localhost/api/catalog?scope=admin");
+  assert.equal(admin.headers.get("Cache-Control"), "private, no-store");
+  assert.ok((await admin.json()).quality);
+  const collection = await miniflare.dispatchFetch("http://localhost/api/collection", { headers: { accept: "text/html" } });
+  assert.equal(collection.headers.get("X-BackTo2000-Cache"), null);
+});
+
+test("successful editorial changes invalidate public HTML and catalog JSON immediately", async () => {
+  const database = await databasePromise;
+  const id = "phone-nokia-3310";
+  const original = await database.prepare("SELECT summary FROM content_items WHERE id = ?").bind(id).first();
+  const summary = `${original.summary} 캐시 무효화 회귀 검증 문장입니다.`;
+  const beforeVersion = await database.prepare("SELECT version FROM catalog_cache_version WHERE id = 1").first();
+  await (await render(`/archive/${id}`)).text();
+  await (await render(`/archive/${id}`)).text();
+  const changed = await miniflare.dispatchFetch("http://localhost/api/catalog", {
+    method: "PATCH", headers: { "content-type": "application/json", origin: "http://localhost" },
+    body: JSON.stringify({ id, summary }),
+  });
+  assert.equal(changed.status, 200, await changed.text());
+  const version = await database.prepare("SELECT version FROM catalog_cache_version WHERE id = 1").first();
+  assert.equal(version.version, beforeVersion.version + 1);
+  const refreshed = await render(`/archive/${id}`);
+  assert.equal(refreshed.headers.get("X-BackTo2000-Cache"), "MISS");
+  assert.match(await refreshed.text(), /캐시 무효화 회귀 검증/);
+  const publicApi = await miniflare.dispatchFetch("https://archive.example/api/catalog");
+  assert.equal(publicApi.headers.get("X-BackTo2000-Cache"), "MISS");
+  assert.equal((await publicApi.json()).items.find((item) => item.id === id).summary, summary);
+  await database.prepare("UPDATE content_items SET summary = ? WHERE id = ?").bind(original.summary, id).run();
+  await database.prepare("UPDATE catalog_cache_version SET version = version + 1 WHERE id = 1").run();
+});
+
+test("records local D1 rows-read metadata for before/after queries", async () => {
+  const database = await databasePromise;
+  const cases = JSON.parse(await readFile(new URL("../outputs/d1-query-cases.json", import.meta.url), "utf8"));
+  const measurements = [];
+  for (const [name, versions] of Object.entries(cases)) {
+    const measured = { case: name };
+    for (const [version, queries] of Object.entries(versions)) {
+      let rows = 0;
+      for (const query of queries) rows += (await database.prepare(query.sql).bind(...query.params).all()).meta.rows_read;
+      measured[version] = rows;
+    }
+    measurements.push(measured);
+  }
+  console.table(measurements);
+  assert.ok(measurements.find((row) => row.case === "detail").after < measurements.find((row) => row.case === "detail").before);
+});
