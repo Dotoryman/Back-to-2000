@@ -70,9 +70,9 @@ test.after(async () => {
   delete globalThis[Symbol.for("catalog-query-test-db")];
 });
 
-test("preserves every catalog field and uses fixed-size batch queries", { concurrency: false }, async () => {
+test("preserves every catalog field with a single public projection query", { concurrency: false }, async () => {
   await measure("home", () => before.listPublishedCatalog(), () => after.listPublishedCatalog());
-  assert.ok(benchmarks.home.after.length <= 24);
+  assert.equal(benchmarks.home.after.length, 1);
   for (let year = 1998; year <= 2020; year++) {
     assert.deepEqual(await after.listPublishedCatalog({ year }), baseline.filter((item) => item.activeYears.includes(year)));
   }
@@ -120,12 +120,12 @@ test("search preserves substrings, field boundaries, Unicode and literal wildcar
 
 test("query plans use targeted indexes and sitemap skips relationships", { concurrency: false }, async () => {
   const plans = benchmarks.detail.after.map(({ sql, params }) => sqlite.prepare(`EXPLAIN QUERY PLAN ${sql}`).all(...params).map((row) => row.detail).join("\n"));
-  assert.match(plans[0], /SEARCH content_items USING INDEX/);
-  for (const plan of plans.slice(1)) assert.doesNotMatch(plan, /SCAN (brands|content_years|content_tags|content_media|content_sources|media)(?:\s|$)/);
+  assert.match(plans[0], /SEARCH published_catalog_items USING INDEX/);
+  for (const plan of plans) assert.doesNotMatch(plan, /SCAN (brands|content_items|content_years|content_tags|content_media|content_sources|media)(?:\s|$)/);
   calls = [];
   assert.deepEqual(await after.listPublishedCatalogIds(), baseline.map(({ id }) => ({ id })));
   assert.equal(calls.length, 1);
-  for (const query of ["SELECT * FROM content_items WHERE status='published' ORDER BY start_year,name", "SELECT * FROM content_items WHERE status='published' AND featured=1 ORDER BY start_year,name"]) {
-    assert.match(sqlite.prepare(`EXPLAIN QUERY PLAN ${query}`).all().map((row) => row.detail).join("\n"), /USING INDEX idx_content_public/);
+  for (const query of ["SELECT * FROM published_catalog_items ORDER BY start_year,name", "SELECT * FROM published_catalog_items WHERE featured=1 ORDER BY start_year,name"]) {
+    assert.match(sqlite.prepare(`EXPLAIN QUERY PLAN ${query}`).all().map((row) => row.detail).join("\n"), /USING INDEX idx_published_catalog/);
   }
 });

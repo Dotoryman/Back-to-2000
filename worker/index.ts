@@ -1,14 +1,19 @@
 import handler from "vinext/server/app-router-entry";
 
-const PUBLIC_CACHE_NAME = "backto2000-public-v2";
+const PUBLIC_CACHE_NAME = "backto2000-public-v3";
 const PUBLIC_CACHE_TTL_SECONDS = 6 * 60 * 60;
+const CATALOG_VERSION_TTL_SECONDS = 5 * 60;
 const CATALOG_VERSION_QUERY = "SELECT version FROM catalog_cache_version WHERE id = 1";
+const CATALOG_VERSION_CACHE_KEY = new Request("https://cache.backto2000.internal/catalog-version");
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     if (isCatalogMutation(request)) {
       const response = await handler.fetch(request, env, ctx);
-      if (response.ok) await bumpCatalogVersion(env);
+      if (response.ok) {
+        const cache = await caches.open(PUBLIC_CACHE_NAME);
+        await bumpCatalogVersion(env, cache);
+      }
       return response;
     }
 
@@ -23,7 +28,7 @@ const worker = {
     }
 
     const cache = await caches.open(PUBLIC_CACHE_NAME);
-    const version = await getCatalogVersion(env);
+    const version = await getCatalogVersion(env, cache);
     // Never reuse a made-up old cache version when D1 is unavailable.
     if (version === null) return withCacheStatus(await handler.fetch(request, env, ctx), "BYPASS");
     const cacheKey = createPublicCacheKey(request, version);
@@ -81,20 +86,34 @@ function createPublicCacheKey(request: Request, version: number) {
   return new Request(cacheUrl, { method: "GET" });
 }
 
-async function getCatalogVersion(env: Env) {
+async function getCatalogVersion(env: Env, cache: Cache) {
   try {
+    const cached = await cache.match(CATALOG_VERSION_CACHE_KEY);
+    if (cached) {
+      const version = Number(await cached.text());
+      if (Number.isSafeInteger(version) && version > 0) return version;
+    }
     const row = await env.DB.prepare(CATALOG_VERSION_QUERY).first<{ version: number }>();
-    return row?.version ?? null;
+    if (!row?.version) return null;
+    await cacheCatalogVersion(cache, row.version);
+    return row.version;
   } catch (error) {
     console.warn(JSON.stringify({ message: "catalog cache version unavailable", error: error instanceof Error ? error.message : String(error) }));
     return null;
   }
 }
 
-async function bumpCatalogVersion(env: Env) {
-  await env.DB.prepare(
-    "INSERT INTO catalog_cache_version (id, version, updated_at) VALUES (1, 2, unixepoch()) ON CONFLICT(id) DO UPDATE SET version = version + 1, updated_at = unixepoch()",
-  ).run();
+async function bumpCatalogVersion(env: Env, cache: Cache) {
+  const row = await env.DB.prepare(
+    "INSERT INTO catalog_cache_version (id, version, updated_at) VALUES (1, 2, unixepoch()) ON CONFLICT(id) DO UPDATE SET version = version + 1, updated_at = unixepoch() RETURNING version",
+  ).first<{ version: number }>();
+  if (row?.version) await cacheCatalogVersion(cache, row.version);
+}
+
+async function cacheCatalogVersion(cache: Cache, version: number) {
+  await cache.put(CATALOG_VERSION_CACHE_KEY, new Response(String(version), {
+    headers: { "Cache-Control": `public, max-age=${CATALOG_VERSION_TTL_SECONDS}` },
+  }));
 }
 
 function isCacheableResponse(response: Response, request: Request) {
