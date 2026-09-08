@@ -1,14 +1,13 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db";
-import { collectionItems, collections, contentItems } from "@/db/schema";
+import { collectionItems, collections, contentItems, contentReactionCounts } from "@/db/schema";
 import { getAuthSession, requestDeviceKey, resolveCollectionId } from "@/domain/auth/session";
 
 export const dynamic = "force-dynamic";
 
 const reaction = z.enum(["used", "remembered", "wanted"]);
 const mutation = z.object({ contentId: z.string().min(3).max(120), reaction });
-type Reaction = z.infer<typeof reaction>;
 type Counts = Record<string, { total: number; used: number; remembered: number; wanted: number }>;
 
 function json(value: unknown, init?: ResponseInit) {
@@ -22,16 +21,10 @@ async function payload(collectionId?: string) {
   const items = collectionId
     ? await db.select({ contentId: collectionItems.contentId, reaction: collectionItems.reaction }).from(collectionItems).where(eq(collectionItems.collectionId, collectionId))
     : [];
-  const totals = await db.select({ contentId: collectionItems.contentId, reaction: collectionItems.reaction, count: sql<number>`count(*)` })
-    .from(collectionItems).groupBy(collectionItems.contentId, collectionItems.reaction);
-  const counts: Counts = {};
-  for (const row of totals) {
-    const current = counts[row.contentId] ?? { total: 0, used: 0, remembered: 0, wanted: 0 };
-    const count = Number(row.count);
-    current[row.reaction as Reaction] = count;
-    current.total += count;
-    counts[row.contentId] = current;
-  }
+  const totals = await db.select().from(contentReactionCounts).where(gt(contentReactionCounts.total, 0));
+  const counts: Counts = Object.fromEntries(totals.map((row) => [row.contentId, {
+    total: row.total, used: row.used, remembered: row.remembered, wanted: row.wanted,
+  }]));
   return { items, counts };
 }
 

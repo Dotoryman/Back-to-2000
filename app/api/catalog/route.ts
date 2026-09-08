@@ -14,7 +14,7 @@ import {
   tags,
 } from "@/db/schema";
 import { isSameOriginMutation } from "@/domain/auth/session";
-import { listPublishedCatalog } from "@/domain/catalog/repository";
+import { listPublishedCatalog, refreshPublishedCatalogProjection } from "@/domain/catalog/repository";
 import { adminError, getAdminAccess, type AdminAccess } from "@/infrastructure/auth/admin";
 
 const contentKind = z.enum(["website", "phone", "product", "service", "event", "game", "program"]);
@@ -143,6 +143,7 @@ export async function POST(request: Request) {
       db.insert(contentRevisions).values({ id: crypto.randomUUID(), contentId: id, version: 1, snapshot: { ...values, mediaId: values.mediaId ?? null }, actorId: access.actor?.id, note: "Initial content creation", createdAt: now }),
       db.insert(contentReviewEvents).values({ id: crypto.randomUUID(), contentId: id, actorId: access.actor?.id, action: "created", toStatus: values.status, note: "콘텐츠 생성", createdAt: now }),
     ]);
+    await refreshPublishedCatalogProjection(id);
     return Response.json({ item }, { status: 201 });
   } catch (error) {
     return databaseError(error);
@@ -201,6 +202,7 @@ export async function PATCH(request: Request) {
       db.insert(contentRevisions).values({ id: crypto.randomUUID(), contentId: values.id, version: updated.contentVersion, snapshot: updated as unknown as Record<string, unknown>, actorId: access.actor?.id, note: values.note ?? action, createdAt: now }),
       db.insert(contentReviewEvents).values({ id: crypto.randomUUID(), contentId: values.id, actorId: access.actor?.id, action, fromStatus: current.status, toStatus: updated.status, note: values.note, createdAt: now }),
     ]);
+    await refreshPublishedCatalogProjection(values.id);
     return Response.json({ item: updated });
   } catch (error) {
     return databaseError(error);

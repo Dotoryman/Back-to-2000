@@ -118,6 +118,47 @@ export const phoneProfiles = sqliteTable("phone_profiles", { contentId: text("co
 export const tags = sqliteTable("tags", { id: text("id").primaryKey(), slug: text("slug").notNull(), name: text("name").notNull(), ...audit }, (t) => [uniqueIndex("uq_tags_slug").on(t.slug)]);
 export const contentTags = sqliteTable("content_tags", { contentId: text("content_id").notNull().references(() => contentItems.id, { onDelete: "cascade" }), tagId: text("tag_id").notNull().references(() => tags.id, { onDelete: "cascade" }) }, (t) => [primaryKey({ columns: [t.contentId, t.tagId] }), index("idx_content_tags_tag_id").on(t.tagId)]);
 
+/**
+ * Read-optimised, denormalised copy of the public catalogue. The editorial
+ * tables remain the source of truth; this table prevents public page renders
+ * from repeatedly hydrating the same brands, tags, media and sources.
+ */
+export const publishedCatalogItems = sqliteTable("published_catalog_items", {
+  contentId: text("content_id").primaryKey().references(() => contentItems.id, { onDelete: "cascade" }),
+  type: text("type", { enum: ["website", "phone", "product", "service", "event", "game", "program"] }).notNull(),
+  slug: text("slug").notNull(),
+  name: text("name").notNull(),
+  brand: text("brand").notNull(),
+  startYear: integer("start_year").notNull(),
+  endYear: integer("end_year"),
+  activeYears: text("active_years", { mode: "json" }).$type<number[]>().notNull(),
+  eyebrow: text("eyebrow").notNull(),
+  summary: text("summary").notNull(),
+  description: text("description").notNull(),
+  tags: text("tags", { mode: "json" }).$type<string[]>().notNull(),
+  accent: text("accent").notNull(),
+  featured: integer("featured", { mode: "boolean" }).notNull().default(false),
+  specs: text("specs", { mode: "json" }).$type<Record<string, string>>(),
+  highlights: text("highlights", { mode: "json" }).$type<string[]>().notNull(),
+  story: text("story", { mode: "json" }).$type<{ significance: string; legacy: string }>(),
+  sourceLabel: text("source_label"),
+  sourceUrl: text("source_url"),
+  imagePublicUrl: text("image_public_url"),
+  imageObjectKey: text("image_object_key"),
+  imageAlt: text("image_alt"),
+  imageCredit: text("image_credit"),
+  imageSourceUrl: text("image_source_url"),
+  imageLicense: text("image_license"),
+  searchText: text("search_text").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, (t) => [
+  uniqueIndex("uq_published_catalog_type_slug").on(t.type, t.slug),
+  index("idx_published_catalog_order").on(t.startYear, t.name),
+  index("idx_published_catalog_type_order").on(t.type, t.startYear, t.name),
+  index("idx_published_catalog_featured_order").on(t.featured, t.startYear, t.name),
+  index("idx_published_catalog_lineage").on(t.type, t.brand, t.startYear, t.name),
+]);
+
 export const contentRevisions = sqliteTable("content_revisions", {
   id: text("id").primaryKey(),
   contentId: text("content_id").notNull().references(() => contentItems.id, { onDelete: "cascade" }),
@@ -170,4 +211,12 @@ export const collectionItems = sqliteTable("collection_items", {
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
 }, (t) => [primaryKey({ columns: [t.collectionId, t.contentId] }), index("idx_collection_items_content_reaction").on(t.contentId, t.reaction)]);
+export const contentReactionCounts = sqliteTable("content_reaction_counts", {
+  contentId: text("content_id").primaryKey().references(() => contentItems.id, { onDelete: "cascade" }),
+  used: integer("used").notNull().default(0),
+  remembered: integer("remembered").notNull().default(0),
+  wanted: integer("wanted").notNull().default(0),
+  total: integer("total").notNull().default(0),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(() => new Date()),
+}, (t) => [index("idx_reaction_counts_total").on(t.total)]);
 export const memories = sqliteTable("memories", { id: text("id").primaryKey(), userId: text("user_id").references(() => users.id, { onDelete: "set null" }), contentId: text("content_id").notNull().references(() => contentItems.id, { onDelete: "cascade" }), body: text("body").notNull(), status: text("status", { enum: ["pending", "published", "hidden"] }).notNull().default("pending"), ...audit }, (t) => [index("idx_memories_content_status").on(t.contentId, t.status)]);

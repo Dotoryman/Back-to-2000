@@ -108,9 +108,23 @@ test("persists an anonymous D1 memory collection with structured reactions", asy
   assert.deepEqual(savedPayload.items, [{ contentId: "phone-nokia-3310", reaction: "remembered" }]);
   assert.equal(savedPayload.counts["phone-nokia-3310"].remembered, 1);
 
+  const database = await databasePromise;
+  let aggregate = await database.prepare("SELECT used, remembered, wanted, total FROM content_reaction_counts WHERE content_id = ?").bind("phone-nokia-3310").first();
+  assert.deepEqual(aggregate, { used: 0, remembered: 1, wanted: 0, total: 1 });
+
+  const changed = await miniflare.dispatchFetch("http://localhost/api/collection", {
+    method: "POST", headers, body: JSON.stringify({ contentId: "phone-nokia-3310", reaction: "wanted" }),
+  });
+  assert.equal(changed.status, 200);
+  assert.equal((await changed.json()).counts["phone-nokia-3310"].wanted, 1);
+  aggregate = await database.prepare("SELECT used, remembered, wanted, total FROM content_reaction_counts WHERE content_id = ?").bind("phone-nokia-3310").first();
+  assert.deepEqual(aggregate, { used: 0, remembered: 0, wanted: 1, total: 1 });
+
   const removed = await miniflare.dispatchFetch("http://localhost/api/collection?contentId=phone-nokia-3310", { method: "DELETE", headers });
   assert.equal(removed.status, 200);
   assert.deepEqual((await removed.json()).items, []);
+  aggregate = await database.prepare("SELECT used, remembered, wanted, total FROM content_reaction_counts WHERE content_id = ?").bind("phone-nokia-3310").first();
+  assert.deepEqual(aggregate, { used: 0, remembered: 0, wanted: 0, total: 0 });
 });
 
 test("registers a first-party member and syncs the anonymous collection", async () => {
@@ -329,4 +343,5 @@ test("records local D1 rows-read metadata for before/after queries", async () =>
   }
   console.table(measurements);
   assert.ok(measurements.find((row) => row.case === "detail").after < measurements.find((row) => row.case === "detail").before);
+  assert.ok(measurements.find((row) => row.case === "home").after <= 300);
 });

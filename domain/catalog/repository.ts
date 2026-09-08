@@ -1,197 +1,151 @@
 import { and, asc, eq, inArray, sql, type SQL } from "drizzle-orm";
 import { cache } from "react";
 import { getDb } from "@/db";
-import {
-  brands,
-  categories,
-  contentItems,
-  contentMedia,
-  contentSources,
-  contentTags,
-  contentYears,
-  eras,
-  media,
-  tags,
-} from "@/db/schema";
+import { brands, categories, contentItems, contentMedia, contentSources, contentTags, contentYears, eras, media, publishedCatalogItems, tags } from "@/db/schema";
 import type { CatalogItem, ContentKind, Era } from "./types";
 
-type CatalogOptions = {
-  kind?: ContentKind | ContentKind[];
-  year?: number;
-  featured?: boolean;
-};
+type CatalogOptions = { kind?: ContentKind | ContentKind[]; year?: number; featured?: boolean };
 
+/** Public reads use one denormalised row per item instead of eight source tables. */
 export async function listPublishedCatalog(options: CatalogOptions = {}): Promise<CatalogItem[]> {
-  const predicates = [eq(contentItems.status, "published")];
-  if (options.kind) predicates.push(Array.isArray(options.kind) ? inArray(contentItems.type, options.kind) : eq(contentItems.type, options.kind));
-  if (options.featured !== undefined) predicates.push(eq(contentItems.featured, options.featured));
-  if (options.year !== undefined) predicates.push(inArray(contentItems.id,
+  const predicates: SQL[] = [];
+  if (options.kind) predicates.push(Array.isArray(options.kind) ? inArray(publishedCatalogItems.type, options.kind) : eq(publishedCatalogItems.type, options.kind));
+  if (options.featured !== undefined) predicates.push(eq(publishedCatalogItems.featured, options.featured));
+  if (options.year !== undefined) predicates.push(inArray(publishedCatalogItems.contentId,
     getDb().select({ id: contentYears.contentId }).from(contentYears).where(eq(contentYears.year, options.year))));
-  return selectCatalog(and(...predicates), undefined, Object.keys(options).length === 0);
+  return selectProjection(predicates.length ? and(...predicates) : undefined);
 }
 
-async function selectCatalog(predicate: SQL | undefined, limit?: number, fullPublicCatalog = false): Promise<CatalogItem[]> {
-  const query = getDb().select().from(contentItems).where(predicate)
-    .orderBy(asc(contentItems.startYear), asc(contentItems.name));
+async function selectProjection(predicate?: SQL, limit?: number): Promise<CatalogItem[]> {
+  const query = getDb().select().from(publishedCatalogItems).where(predicate)
+    .orderBy(asc(publishedCatalogItems.startYear), asc(publishedCatalogItems.name));
   const rows = await (limit === undefined ? query : query.limit(limit));
-  if (fullPublicCatalog) return hydrateCatalogItems(rows, true);
-  const result: CatalogItem[] = [];
-  // D1 accepts at most 100 bound parameters. Relation reads stay indexed by
-  // content_id and are issued in bounded batches rather than scanning JSON rows.
-  for (let offset = 0; offset < rows.length; offset += 90) {
-    result.push(...await hydrateCatalogItems(rows.slice(offset, offset + 90)));
-  }
-  return result;
+  return rows.map(projectionToCatalogItem);
 }
 
-async function hydrateCatalogItems(itemRows: (typeof contentItems.$inferSelect)[], fullPublicCatalog = false): Promise<CatalogItem[]> {
-  if (!itemRows.length) return [];
-  const ids = itemRows.map((row) => row.id);
-  const brandIds = [...new Set(itemRows.flatMap((row) => row.brandId ? [row.brandId] : []))];
-  const relations = fullPublicCatalog
-    ? await loadFullPublicRelations()
-    : await loadTargetedRelations(ids, brandIds);
-  const { brandRows, yearRows, tagRows, heroRows, sourceRows } = relations;
-  const brandById = new Map(brandRows.map((row) => [row.id, row]));
-
-  return itemRows
-    .map((row) => {
-      const itemYears = yearRows.filter((candidate) => candidate.contentId === row.id).map((candidate) => candidate.year);
-      const itemTags = tagRows
-        .filter((candidate) => candidate.contentId === row.id)
-        .map((candidate) => candidate.name)
-        .filter((value): value is string => Boolean(value));
-      const hero = heroRows.find((candidate) => candidate.contentId === row.id)?.image;
-      const source = sourceRows.find((candidate) => candidate.contentId === row.id && candidate.isPrimary)
-        ?? sourceRows.find((candidate) => candidate.contentId === row.id);
-      const metadata = row.metadata ?? {};
-
-      return {
-        id: row.id,
-        kind: row.type,
-        slug: row.slug,
-        name: row.name,
-        brand: row.brandId ? brandById.get(row.brandId)?.name ?? "Unknown" : "Unknown",
-        year: row.startYear,
-        endYear: row.endYear ?? undefined,
-        activeYears: itemYears.length ? itemYears : [row.startYear],
-        eyebrow: row.eyebrow,
-        summary: row.summary,
-        description: row.body,
-        tags: itemTags,
-        accent: row.accent,
-        featured: row.featured,
-        specs: isStringRecord(metadata.specs) ? metadata.specs : undefined,
-        highlights: Array.isArray(metadata.highlights)
-          ? metadata.highlights.filter((value): value is string => typeof value === "string")
-          : [],
-        story: isStory(metadata.story) ? metadata.story : undefined,
-        source: source ? { label: source.label, url: source.url } : undefined,
-        image: hero ? {
-          src: hero.publicUrl ?? `/api/media?key=${encodeURIComponent(hero.objectKey)}`,
-          alt: hero.altText,
-          credit: hero.credit ?? "",
-          sourceUrl: hero.sourceUrl ?? "",
-          license: hero.license ?? undefined,
-        } : undefined,
-      } satisfies CatalogItem;
-    });
+function projectionToCatalogItem(row: typeof publishedCatalogItems.$inferSelect): CatalogItem {
+  const hasImage = Boolean(row.imagePublicUrl || row.imageObjectKey);
+  return {
+    id: row.contentId, kind: row.type, slug: row.slug, name: row.name, brand: row.brand,
+    year: row.startYear, endYear: row.endYear ?? undefined, activeYears: row.activeYears,
+    eyebrow: row.eyebrow, summary: row.summary, description: row.description, tags: row.tags,
+    accent: row.accent, featured: row.featured, specs: row.specs ?? undefined,
+    highlights: row.highlights, story: row.story ?? undefined,
+    source: row.sourceLabel && row.sourceUrl ? { label: row.sourceLabel, url: row.sourceUrl } : undefined,
+    image: hasImage ? {
+      src: row.imagePublicUrl ?? `/api/media?key=${encodeURIComponent(row.imageObjectKey ?? "")}`,
+      alt: row.imageAlt ?? "", credit: row.imageCredit ?? "", sourceUrl: row.imageSourceUrl ?? "",
+      license: row.imageLicense ?? undefined,
+    } : undefined,
+  };
 }
 
 export const getPublishedCatalogItem = cache(async (id: string) => {
-  const [item] = await selectCatalog(and(eq(contentItems.status, "published"), eq(contentItems.id, id)), 1);
+  const [item] = await selectProjection(eq(publishedCatalogItems.contentId, id), 1);
   return item;
 });
 
 export async function getPublishedCatalogItemBySlug(kind: "website" | "phone", slug: string) {
-  const [item] = await selectCatalog(and(eq(contentItems.status, "published"), eq(contentItems.type, kind), eq(contentItems.slug, slug)), 1);
+  const [item] = await selectProjection(and(eq(publishedCatalogItems.type, kind), eq(publishedCatalogItems.slug, slug)), 1);
   return item;
 }
 
 export async function searchPublishedCatalog(query: string) {
   const normalized = query.trim().toLocaleLowerCase("ko");
   if (!normalized) return listPublishedCatalog();
-  const db = getDb();
-  // Match the same concatenated fields and tag insertion order as the existing search.
-  // SQLite lower() is ASCII-only: broaden non-ASCII cased characters to a single
-  // separator, then apply the original Unicode comparison to the candidate results.
-  // instr() also avoids LIKE's pattern-length limit and treats %/_ literally.
   const needle = Array.from(normalized, (char) => char.toUpperCase() !== char.toLowerCase() && char.charCodeAt(0) > 127
     ? " " : char).join("").split(/\s+/).sort((a, b) => b.length - a.length)[0];
-  const itemText = sql`lower(${contentItems.name} || ' ' || ${contentItems.summary} || ' ' || ${contentItems.body})`;
-  const brandMatches = db.select({ id: brands.id }).from(brands).where(sql`instr(lower(${brands.name}), ${needle}) > 0`);
-  const tagMatches = db.select({ id: contentTags.contentId }).from(contentTags)
-    .innerJoin(tags, eq(tags.id, contentTags.tagId)).where(sql`instr(lower(${tags.name}), ${needle}) > 0`);
-  const items = await selectCatalog(and(eq(contentItems.status, "published"), sql`(
-    instr(${itemText}, ${needle}) > 0 or ${contentItems.brandId} in ${brandMatches} or ${contentItems.id} in ${tagMatches}
-  )`));
-  return items.filter((item) =>
-    [item.name, item.brand, item.summary, item.description, ...item.tags]
-      .join(" ")
-      .toLocaleLowerCase("ko")
-      .includes(normalized),
-  );
+  const items = await selectProjection(needle ? sql`instr(lower(${publishedCatalogItems.searchText}), ${needle}) > 0` : undefined);
+  return items.filter((item) => [item.name, item.brand, item.summary, item.description, ...item.tags]
+    .join(" ").toLocaleLowerCase("ko").includes(normalized));
 }
 
-async function loadTargetedRelations(ids: string[], brandIds: string[]) {
+/** Refresh the projection after an editorial write; unpublished rows disappear. */
+export async function refreshPublishedCatalogProjection(contentId: string) {
   const db = getDb();
+  const [source] = await selectSourceCatalog(and(eq(contentItems.status, "published"), eq(contentItems.id, contentId)), 1);
+  if (!source) {
+    await db.delete(publishedCatalogItems).where(eq(publishedCatalogItems.contentId, contentId));
+    return;
+  }
+  const values = catalogItemToProjection(source, new Date());
+  const { contentId: _contentId, ...updates } = values;
+  void _contentId;
+  await db.insert(publishedCatalogItems).values(values).onConflictDoUpdate({ target: publishedCatalogItems.contentId, set: updates });
+}
+
+function catalogItemToProjection(item: CatalogItem, updatedAt: Date): typeof publishedCatalogItems.$inferInsert {
+  const r2Prefix = "/api/media?key=";
+  return {
+    contentId: item.id, type: item.kind, slug: item.slug, name: item.name, brand: item.brand,
+    startYear: item.year, endYear: item.endYear, activeYears: item.activeYears?.length ? item.activeYears : [item.year],
+    eyebrow: item.eyebrow, summary: item.summary, description: item.description, tags: item.tags,
+    accent: item.accent, featured: item.featured ?? false, specs: item.specs, highlights: item.highlights, story: item.story,
+    sourceLabel: item.source?.label, sourceUrl: item.source?.url,
+    imagePublicUrl: item.image?.src.startsWith(r2Prefix) ? undefined : item.image?.src,
+    imageObjectKey: item.image?.src.startsWith(r2Prefix) ? decodeURIComponent(item.image.src.slice(r2Prefix.length)) : undefined,
+    imageAlt: item.image?.alt, imageCredit: item.image?.credit, imageSourceUrl: item.image?.sourceUrl,
+    imageLicense: item.image?.license,
+    searchText: [item.name, item.brand, item.summary, item.description, ...item.tags].join(" "), updatedAt,
+  };
+}
+
+async function selectSourceCatalog(predicate: SQL | undefined, limit?: number): Promise<CatalogItem[]> {
+  const query = getDb().select().from(contentItems).where(predicate).orderBy(asc(contentItems.startYear), asc(contentItems.name));
+  const rows = await (limit === undefined ? query : query.limit(limit));
+  const result: CatalogItem[] = [];
+  for (let offset = 0; offset < rows.length; offset += 90) result.push(...await hydrateSourceItems(rows.slice(offset, offset + 90)));
+  return result;
+}
+
+async function hydrateSourceItems(itemRows: (typeof contentItems.$inferSelect)[]): Promise<CatalogItem[]> {
+  if (!itemRows.length) return [];
+  const db = getDb();
+  const ids = itemRows.map((row) => row.id);
+  const brandIds = [...new Set(itemRows.flatMap((row) => row.brandId ? [row.brandId] : []))];
   const [brandRows, yearRows, tagRows, heroRows, sourceRows] = await Promise.all([
     brandIds.length ? db.select({ id: brands.id, name: brands.name }).from(brands).where(inArray(brands.id, brandIds)) : [],
     db.select().from(contentYears).where(inArray(contentYears.contentId, ids)).orderBy(asc(contentYears.year), asc(contentYears.sortOrder)),
-    db.select({ contentId: contentTags.contentId, name: tags.name }).from(contentTags)
-      .innerJoin(tags, eq(tags.id, contentTags.tagId)).where(inArray(contentTags.contentId, ids)).orderBy(sql`${contentTags}.rowid`),
-    db.select({ contentId: contentMedia.contentId, image: media }).from(contentMedia)
-      .leftJoin(media, eq(media.id, contentMedia.mediaId))
-      .where(and(inArray(contentMedia.contentId, ids), eq(contentMedia.role, "hero")))
-      .orderBy(asc(contentMedia.sortOrder), sql`${contentMedia}.rowid`),
-    db.select().from(contentSources).where(inArray(contentSources.contentId, ids))
-      .orderBy(asc(contentSources.isPrimary), sql`${contentSources}.rowid`),
+    db.select({ contentId: contentTags.contentId, name: tags.name }).from(contentTags).innerJoin(tags, eq(tags.id, contentTags.tagId))
+      .where(inArray(contentTags.contentId, ids)).orderBy(sql`${contentTags}.rowid`),
+    db.select({ contentId: contentMedia.contentId, image: media }).from(contentMedia).leftJoin(media, eq(media.id, contentMedia.mediaId))
+      .where(and(inArray(contentMedia.contentId, ids), eq(contentMedia.role, "hero"))).orderBy(asc(contentMedia.sortOrder), sql`${contentMedia}.rowid`),
+    db.select().from(contentSources).where(inArray(contentSources.contentId, ids)).orderBy(asc(contentSources.isPrimary), sql`${contentSources}.rowid`),
   ]);
-  return { brandRows, yearRows, tagRows, heroRows, sourceRows };
+  const brandById = new Map(brandRows.map((row) => [row.id, row.name]));
+  return itemRows.map((row) => {
+    const hero = heroRows.find((candidate) => candidate.contentId === row.id)?.image;
+    const source = sourceRows.find((candidate) => candidate.contentId === row.id && candidate.isPrimary) ?? sourceRows.find((candidate) => candidate.contentId === row.id);
+    const metadata = row.metadata ?? {};
+    const itemYears = yearRows.filter((candidate) => candidate.contentId === row.id).map((candidate) => candidate.year);
+    return {
+      id: row.id, kind: row.type, slug: row.slug, name: row.name,
+      brand: row.brandId ? brandById.get(row.brandId) ?? "Unknown" : "Unknown",
+      year: row.startYear, endYear: row.endYear ?? undefined, activeYears: itemYears.length ? itemYears : [row.startYear],
+      eyebrow: row.eyebrow, summary: row.summary, description: row.body,
+      tags: tagRows.filter((candidate) => candidate.contentId === row.id).map((candidate) => candidate.name),
+      accent: row.accent, featured: row.featured,
+      specs: isStringRecord(metadata.specs) ? metadata.specs : undefined,
+      highlights: Array.isArray(metadata.highlights) ? metadata.highlights.filter((value): value is string => typeof value === "string") : [],
+      story: isStory(metadata.story) ? metadata.story : undefined,
+      source: source ? { label: source.label, url: source.url } : undefined,
+      image: hero ? { src: hero.publicUrl ?? `/api/media?key=${encodeURIComponent(hero.objectKey)}`, alt: hero.altText, credit: hero.credit ?? "", sourceUrl: hero.sourceUrl ?? "", license: hero.license ?? undefined } : undefined,
+    } satisfies CatalogItem;
+  });
 }
 
-async function loadFullPublicRelations() {
-  const db = getDb();
-  // Every one of these rows participates in the full public archive. Separate
-  // table reads are cheaper in D1 than repeating tag/media rows through joins.
-  const [brandRows, yearRows, allTags, tagLinks, allMedia, mediaLinks, sourceRows] = await Promise.all([
-    db.select({ id: brands.id, name: brands.name }).from(brands),
-    db.select().from(contentYears).orderBy(asc(contentYears.year), asc(contentYears.sortOrder)),
-    db.select({ id: tags.id, name: tags.name }).from(tags),
-    db.select().from(contentTags),
-    db.select().from(media),
-    db.select().from(contentMedia).orderBy(asc(contentMedia.sortOrder)),
-    db.select().from(contentSources).orderBy(asc(contentSources.isPrimary)),
-  ]);
-  const tagById = new Map(allTags.map((row) => [row.id, row.name]));
-  const mediaById = new Map(allMedia.map((row) => [row.id, row]));
-  const tagRows = tagLinks.flatMap((row) => {
-    const name = tagById.get(row.tagId);
-    return name ? [{ contentId: row.contentId, name }] : [];
-  });
-  const heroRows = mediaLinks.flatMap((row) => {
-    const image = row.role === "hero" ? mediaById.get(row.mediaId) : undefined;
-    return image ? [{ contentId: row.contentId, image }] : [];
-  });
-  return { brandRows, yearRows, tagRows, heroRows, sourceRows };
-}
-
-/** Only hydrate the neighbours used by the existing detail view, not the entire archive. */
 export async function listEvolutionCatalog(item: CatalogItem): Promise<CatalogItem[]> {
-  const family = await getDb().select({ id: contentItems.id, year: contentItems.startYear }).from(contentItems)
-    .leftJoin(brands, eq(brands.id, contentItems.brandId))
-    .where(and(eq(contentItems.status, "published"), eq(contentItems.type, item.kind), sql`coalesce(${brands.name}, 'Unknown') = ${item.brand}`))
-    .orderBy(asc(contentItems.startYear), asc(contentItems.name));
+  const family = await selectProjection(and(eq(publishedCatalogItems.type, item.kind), eq(publishedCatalogItems.brand, item.brand)));
   const position = family.findIndex((row) => row.id === item.id);
   const neighbours = family.filter((_, index) => Math.abs(index - position) <= 2);
   const next = family.find((row) => row.year > item.year);
-  const ids = [...new Set([...neighbours.map((row) => row.id), ...(next ? [next.id] : [])])];
-  return ids.length ? selectCatalog(and(eq(contentItems.status, "published"), inArray(contentItems.id, ids))) : [];
+  const ids = new Set([...neighbours.map((row) => row.id), ...(next ? [next.id] : [])]);
+  return family.filter((row) => ids.has(row.id));
 }
 
 export async function listPublishedCatalogIds() {
-  return getDb().select({ id: contentItems.id }).from(contentItems).where(eq(contentItems.status, "published"))
-    .orderBy(asc(contentItems.startYear), asc(contentItems.name));
+  return getDb().select({ id: publishedCatalogItems.contentId }).from(publishedCatalogItems)
+    .orderBy(asc(publishedCatalogItems.startYear), asc(publishedCatalogItems.name));
 }
 
 export async function listPublishedEras(): Promise<Era[]> {
