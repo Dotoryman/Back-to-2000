@@ -1,10 +1,18 @@
 # Back to 2000
 
 > 1998년부터 2020년까지 한국의 인터넷, 휴대전화, 게임 문화를 탐험하는 인터랙티브 디지털 아카이브입니다.
+>
+> An interactive digital archive of Korean internet, mobile, and game culture from 1998 to 2020.
 
-[**라이브 데모**](https://backto2000.cloud) · [변경 기록](CHANGELOG.md) · [운영·복구 안내](docs/OPERATIONS.md) · [로드맵](docs/ROADMAP.md)
+[**라이브 데모 · Live demo**](https://backto2000.cloud) · [변경 기록](CHANGELOG.md) · [운영·복구 안내](docs/OPERATIONS.md) · [로드맵](docs/ROADMAP.md)
 
-현재 버전 **0.4.3** · 공개 기록 **278개** · 대상 연도 **1998–2020**
+![Back to 2000 — 1998–2020 디지털 타임머신](public/github-social-preview.jpg)
+
+현재 버전 **0.4.5** · 공개 기록 **278개** · 대상 연도 **1998–2020**
+
+연도를 고르면 그 시절의 웹사이트, 온라인 서비스, 휴대전화, 디지털 제품과 게임을 이미지와 이야기로 돌아볼 수 있습니다. 기억나는 항목이 빠졌거나 기록을 바로잡고 싶다면 [Issue](https://github.com/Dotoryman/Back-to-2000/issues)를 남겨주세요.
+
+> 이 아카이브가 즐거웠거나 다시 찾아보고 싶다면 GitHub Star로 저장해 주세요.
 
 ## 주요 기능
 
@@ -13,6 +21,15 @@
 - 전체 공개 기록의 검수 상태와 이미지 품질 점검
 - 편집자·관리자 역할을 분리한 운영 스튜디오
 - D1 백업, 격리 복원 검증, 장애 대응을 포함한 운영 절차
+
+## English overview
+
+- Browse **278 curated records** across the years 1998–2020.
+- Explore websites, online services, mobile phones, digital products, and games through an image-led timeline.
+- Save personal memories and reactions in a Cloudflare D1-backed collection.
+- Study a production-oriented React and Cloudflare Workers project with documented backup and recovery procedures.
+
+Try the [live archive](https://backto2000.cloud). If it helps your research or brings back a memory, consider starring the repository so you can find it again.
 
 ## 기술 스택
 
