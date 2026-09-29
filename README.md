@@ -9,3 +9,5 @@ https://dotoryman.com
 A digital archive of Korean internet culture, mobile trends, and games from 1998 to 2020.
 
 **언어 및 기술 · Languages & Technologies:** TypeScript · JavaScript · React · Vite · Cloudflare Workers · D1 · R2
+
+<!-- Temporary README contribution marker: 2026-09-29 Asia/Seoul; immediately reverted. -->
