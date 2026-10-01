@@ -1,0 +1,56 @@
+name: Daily repository maintenance
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-repository-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintenance:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Check out default branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Inspect repository and commit daily report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Dotoryman'
+          git config user.email '134985085+Dotoryman@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            node .github/scripts/update-maintenance.cjs
+            git add -- maintenance/status.json
+            if git diff --cached --quiet; then
+              echo 'Daily report already exists; no additional commit.'
+              exit 0
+            fi
+            report_date="$(node -p "require('./maintenance/status.json').checked_date_kst")"
+            git commit -m "chore(maintenance): inspect repository on $report_date (KST)"
+            if git push origin "HEAD:refs/heads/$DEFAULT_BRANCH"; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              git fetch origin "$DEFAULT_BRANCH"
+              # Disposable Actions checkout: regenerate against current remote contents.
+              git reset --hard FETCH_HEAD
+            fi
+          done
+          echo 'Unable to push report after three attempts.' >&2
+          exit 1
