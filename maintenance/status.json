@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "repository": "Dotoryman/Back-to-2000",
+  "project_kind": "web",
+  "checked_date_kst": "2026-10-01",
+  "checked_at_utc": "2026-10-01T00:10:32.282Z",
+  "default_branch": "main",
+  "inspected_commit": "4211d6f34a4a7c11140b6fb217a6e865cd1a5691",
+  "workflow_run": "https://github.com/Dotoryman/Back-to-2000/actions/runs/36794810763",
+  "inventory": {
+    "tracked_project_files": 475,
+    "tracked_project_bytes": 66483026,
+    "content_sha256": "c02cf38af9559046c81287f6275a069b7288e5329e5af3ae4c375da433c14dec",
+    "package": {
+      "name": "back-to-2000",
+      "version": "0.4.5",
+      "node": ">=22.13.0",
+      "scripts": [
+        "build",
+        "cloudflare:backup",
+        "cloudflare:deploy",
+        "cloudflare:migrate",
+        "cloudflare:types",
+        "cloudflare:verify-backup",
+        "db:generate",
+        "db:seed:v0.2",
+        "db:seed:v0.3",
+        "db:seed:v0.3.2",
+        "dev",
+        "images:games",
+        "lint",
+        "quality",
+        "quality:catalog",
+        "quality:images",
+        "start",
+        "test"
+      ],
+      "direct_dependencies": 7,
+      "development_dependencies": 23,
+      "locked_packages": 655,
+      "lockfile_version": 3
+    },
+    "source_files": 62,
+    "test_files": 3,
+    "sql_migrations": 14,
+    "public_assets": 349
+  },
+  "checks": [
+    {
+      "name": "README present and nonempty",
+      "passed": true,
+      "details": "Tracked README.md"
+    },
+    {
+      "name": "npm lock root matches manifest",
+      "passed": true,
+      "details": "Compared name, version and declared dependency specifications; npm ci was not run."
+    },
+    {
+      "name": "Project source inventory nonempty",
+      "passed": true,
+      "details": "app, components, domain, infrastructure, lib, worker, static-src"
+    },
+    {
+      "name": "Cloudflare configuration present",
+      "passed": true,
+      "details": "wrangler.production.jsonc"
+    }
+  ],
+  "result": "passed",
+  "scope": "Repository structure, manifest consistency and tracked asset references only. Application tests, builds, dependency vulnerability scans and live service availability are not assessed."
+}
